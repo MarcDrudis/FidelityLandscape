@@ -1,9 +1,0 @@
-matplotlib
-pandas
-plotly
-qiskit-aer
-qiskit-ibm-runtime
-qiskit-terra==0.23.0rc1
-qiskit_ibm_provider
-qiskit_ibmq_provider
-tqdm

@@ -13,6 +13,8 @@ setup(
         "matplotlib",
         "plotly",
         "pandas",
+        "pylatexenc",
+        "nbformat",
     ],
     dependency_links=["git+"],
 )

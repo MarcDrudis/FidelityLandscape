@@ -15,6 +15,7 @@ setup(
         "pandas",
         "pylatexenc",
         "nbformat",
+        "numba",
     ],
     dependency_links=["git+"],
 )

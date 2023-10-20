@@ -2,6 +2,7 @@ LICENSE
 setup.py
 fidlib/__init__.py
 fidlib/basicfunctions.py
+fidlib/variance.py
 fidlib.egg-info/PKG-INFO
 fidlib.egg-info/SOURCES.txt
 fidlib.egg-info/dependency_links.txt

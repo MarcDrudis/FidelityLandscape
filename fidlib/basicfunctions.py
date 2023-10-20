@@ -29,7 +29,7 @@ def create_heisenberg(
     )
 
 
-def create_heisenberg(
+def create_ising(
     num_qubits: int, j_const: float, g_const: float, circular: bool = False
 ) -> SparsePauliOp:
     """Creates an Heisenberg Hamiltonian on a lattice."""

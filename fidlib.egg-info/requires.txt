@@ -1,6 +1,7 @@
-matplotlib
-pandas
-plotly
-pylatexenc
 qiskit
 tqdm
+matplotlib
+plotly
+pandas
+pylatexenc
+nbformat

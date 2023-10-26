@@ -12,3 +12,4 @@ Requires-Dist: plotly
 Requires-Dist: pandas
 Requires-Dist: pylatexenc
 Requires-Dist: nbformat
+Requires-Dist: numba

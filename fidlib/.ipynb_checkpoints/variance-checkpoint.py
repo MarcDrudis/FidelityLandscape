@@ -81,8 +81,3 @@ def _abs2(x):
 def kplus(omega: float) -> float:
     """Computes 1/(2w) * Inegral(cos(x)^2,-omega,omega)"""
     return 0.5 + np.sin(2 * omega) / (4 * omega)
-
-
-def cplus(omega: float) -> float:
-    """Computes 1/(2w) * Inegral(cos(x)^4,-omega,omega)"""
-    return (12 * omega + 8 * np.sin(2 * omega) + np.sin(4 * omega)) / (32 * omega)

@@ -30,12 +30,12 @@ class VarianceComputer:
         else:
             raise ("Custom dt not yet implemented")
 
-    def _sample_points(self, batch_size: int, omega: float) -> np.array:
+    def _sample_points(self, batch_size: int, omega: float) -> np.ndarray:
         return np.random.uniform(
             low=-omega, high=omega, size=(batch_size, self.qc.num_parameters)
         )
 
-    def _compute_batch(self, batch_size: int, omega: float) -> np.array:
+    def _compute_batch(self, batch_size: int, omega: float) -> np.ndarray:
         dthetas = self._sample_points(batch_size=batch_size, omega=omega)
         perturbed_states = np.array(
             [
@@ -86,3 +86,13 @@ def kplus(omega: float) -> float:
 def cplus(omega: float) -> float:
     """Computes 1/(2w) * Inegral(cos(x)^4,-omega,omega)"""
     return (12 * omega + 8 * np.sin(2 * omega) + np.sin(4 * omega)) / (32 * omega)
+
+def a_const(omega:float)->float:
+    "Computes cplus-kplus^2"
+    return cplus(omega)-kplus(omega)**2
+
+from scipy.optimize import minimize_scalar
+def bound(omega:float,alpha:float,num_param:int)->float:
+    "Computes the full bound"
+    fun = lambda beta: a_const(omega)*(alpha*kplus(omega)**num_param-beta*(1-kplus(omega)**num_param))**2
+    return    minimize_scalar(fun,bounds=(-2,2)).fun

@@ -28,15 +28,7 @@ class VarianceComputer:
                 num=times[1],
             )
         else:
-            self.evolved_states = np.array(
-                [
-                    expm_multiply(
-                        A=-1.0j * t * H.to_matrix(sparse=True),
-                        B=Statevector(qc.bind_parameters(self.initial_parameters)).data,
-                    )
-                    for t in times
-                ]
-            )
+            raise ("Custom dt not yet implemented")
 
     def _sample_points(self, batch_size: int, omega: float) -> np.ndarray:
         return np.random.uniform(

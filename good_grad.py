@@ -4,8 +4,9 @@ from qiskit.circuit import ParameterVector, QuantumCircuit
 from qiskit.quantum_info import SparsePauliOp, Statevector, state_fidelity
 from scipy.optimize import minimize
 from scipy.sparse.linalg import expm_multiply
+from tqdm import tqdm
 
-from fidlib.basicfunctions import create_ising
+from fidlib.basicfunctions import create_ising, find_local_minima
 
 np.random.seed(2)
 
@@ -43,36 +44,49 @@ deltas = np.linspace(-1, 1, 100) * np.pi
 initial_parameters = np.random.uniform(-np.pi, np.pi, 3)
 
 infidelities = [lossfunction(d * direction, initial_parameters) for d in deltas]
-plt.plot(deltas, infidelities)
-plt.show()
+# plt.plot(deltas, infidelities)
+# plt.show()
 
 cut_minima = -2.4 * direction
 
-result = minimize(lossfunction, cut_minima, args=(initial_parameters))
-local_minima = result.x
+local_minima = find_local_minima(lossfunction, cut_minima, initial_parameters)
 
 direction = np.mod(local_minima, np.pi)
 deltas = np.linspace(-1, 1, 100) * 1.3
 infidelities = [lossfunction(d * direction, initial_parameters) for d in deltas]
 
-plt.plot(deltas, infidelities)
-plt.show()
-times = np.linspace(0, 5e-1, 50)
+# plt.plot(deltas, infidelities)
+# plt.show()
+times = np.linspace(0, 2, 50)
 global_inf = [lossfunction(0, initial_parameters)]
-global_params = [0]
+global_params = [np.zeros(local_minima.size)]
 local_inf = [lossfunction(local_minima, initial_parameters)]
 local_params = [local_minima]
-for t in times[1:]:
-    result_global = minimize(
-        lossfunction, global_params[-1], args=(initial_parameters, t)
+
+for t in tqdm(times[1:]):
+    result_global = find_local_minima(
+        lossfunction,
+        global_params[-1],
+        initial_parameters,
+        t,
+        learning_rate=1e-1,
+        epsilon=1e-4,
     )
-    result_local = minimize(
-        lossfunction, local_params[-1], args=(initial_parameters, t)
+    result_local = find_local_minima(
+        lossfunction, local_params[-1], initial_parameters, t
     )
-    global_inf.append(result_global.fun)
-    local_inf.append(result_local.fun)
-    global_params.append(result_global.x)
-    local_params.append(result_local.x)
+    global_inf.append(lossfunction(result_global, initial_parameters, t))
+    local_inf.append(lossfunction(result_local, initial_parameters, t))
+    global_params.append(result_global)
+    local_params.append(result_local)
+
+np.save(
+    "/home/marc/Documents/Fidelity/FidelityLandscape/data_crossing.npy",
+    {"Time": times, "Local": local_inf, "Global": global_inf},
+    allow_pickle=True,
+)
 plt.plot(times, global_inf, marker=".")
 plt.plot(times, local_inf)
 plt.show()
+
+##Leave it as it is. We notice a crossing in this graphic at time 1.25 - 1.5

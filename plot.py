@@ -30,9 +30,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Set a consistent color palette
-colors = ["#4056A1", "#075C2F", "#7D8238", "#453F3F", "#692411", "#D79922", "#F13C20"]
-
 # Load data
 dataA = np.load(
     "/home/marc/Documents/Fidelity/FidelityLandscape/data_crossing.npy",
@@ -42,6 +39,9 @@ dataB = np.load(
     "/home/marc/Documents/Fidelity/FidelityLandscape/degenenerate_data.npy",
     allow_pickle=True,
 ).item()
+
+# Set a consistent color palette
+colors = ["#4056A1", "#075C2F", "#7D8238", "#453F3F", "#692411", "#D79922", "#F13C20"]
 
 plt.rcParams.update({"font.size": 12})
 plt.rc("text", usetex=True)

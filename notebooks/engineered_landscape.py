@@ -1,7 +1,7 @@
-from qiskit.quantum_info import SparsePauliOp, Statevector, state_fidelity
-from qiskit.circuit import QuantumCircuit, ParameterVector
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from qiskit.circuit import ParameterVector, QuantumCircuit
+from qiskit.quantum_info import SparsePauliOp, Statevector, state_fidelity
 from scipy.optimize import minimize
 from scipy.sparse.linalg import expm_multiply
 
@@ -97,7 +97,7 @@ print(
 
 times = np.linspace(0, 5e-1, 50)
 global_inf = [lossfunction(0, initial_parameters)]
-global_params = [0]
+global_params = [np.zeros(qc.num_parameters)]
 local_inf = [lossfunction(local_minima, initial_parameters)]
 local_params = [local_minima]
 for t in times[1:]:

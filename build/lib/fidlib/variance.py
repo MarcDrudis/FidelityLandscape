@@ -10,7 +10,7 @@ class VarianceComputer:
         self,
         qc: QuantumCircuit,
         initial_parameters: np.ndarray | None,
-        times: np.ndarray | tuple[float, int],
+        times: np.ndarray | tuple[float, int] | None,
         H: SparsePauliOp,
     ):
         self.qc = qc
@@ -27,6 +27,12 @@ class VarianceComputer:
                 stop=times[0],
                 num=times[1],
             )
+
+        elif times is None:
+            s = Statevector(qc.bind_parameters(self.initial_parameters))
+            l = [s]
+            self.evolved_states = np.array(l)
+
         else:
             self.evolved_states = np.array(
                 [
@@ -95,12 +101,20 @@ def cplus(omega: float) -> float:
     """Computes 1/(2w) * Inegral(cos(x)^4,-omega,omega)"""
     return (12 * omega + 8 * np.sin(2 * omega) + np.sin(4 * omega)) / (32 * omega)
 
-def a_const(omega:float)->float:
+
+def a_const(omega: float) -> float:
     "Computes cplus-kplus^2"
-    return cplus(omega)-kplus(omega)**2
+    return cplus(omega) - kplus(omega) ** 2
+
 
 from scipy.optimize import minimize_scalar
-def bound(omega:float,alpha:float,num_param:int)->float:
+
+
+def bound(omega: float, alpha: float, num_param: int) -> float:
     "Computes the full bound"
-    fun = lambda beta: a_const(omega)*(alpha*kplus(omega)**num_param-beta*(1-kplus(omega)**num_param))**2
-    return    minimize_scalar(fun,bounds=(-2,2)).fun
+    fun = (
+        lambda beta: a_const(omega)
+        * (alpha * kplus(omega) ** num_param - beta * (1 - kplus(omega) ** num_param))
+        ** 2
+    )
+    return minimize_scalar(fun, bounds=(-2, 2)).fun

@@ -1,8 +1,44 @@
+from typing import Callable
+
 import numpy as np
 import plotly.express as px
 from qiskit.algorithms import SciPyRealEvolver, TimeEvolutionProblem
 from qiskit.circuit.library import EfficientSU2
 from qiskit.quantum_info import SparsePauliOp, Statevector, state_fidelity
+from scipy.optimize import approx_fprime
+
+
+def find_local_minima(
+    fun: Callable,
+    x0: np.ndarray,
+    *args,
+    learning_rate: float = 0.01,
+    max_iterations: int = 1000,
+    epsilon: float = 1e-6
+) -> np.ndarray:
+    """
+    Find the closest local minima using slow gradient descent.
+
+    Parameters:
+    - fun: The target function.
+    - x0: Initial point.
+    - *args: Extra arguments for the target function.
+    - learning_rate: Step size for gradient descent.
+    - max_iterations: Maximum number of iterations.
+    - epsilon: Convergence threshold.
+
+    Returns:
+    - Local minima as a numpy array.
+    """
+    x = x0.copy()
+
+    for _ in range(max_iterations):
+        gradient = approx_fprime(x, fun, 1.49e-8, *args)
+        x -= learning_rate * gradient
+        if np.linalg.norm(gradient) < epsilon:
+            break
+
+    return x
 
 
 def create_heisenberg(

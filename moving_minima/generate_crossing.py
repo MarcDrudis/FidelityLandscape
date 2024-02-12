@@ -88,7 +88,14 @@ for t in tqdm(times[1:]):
 
 np.save(
     "/home/marc/Documents/Fidelity/FidelityLandscape/moving_minima/data_crossing.npy",
-    {"Time": times, "Local": local_inf, "Global": global_inf},
+    {
+        "qc": qc,
+        "global_inf": global_inf,
+        "global_params": global_params,
+        "local_inf": local_inf,
+        "local_params": local_params,
+        "times": times,
+    },
     allow_pickle=True,
 )
 plt.plot(times, global_inf, marker=".")

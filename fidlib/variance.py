@@ -27,10 +27,12 @@ class VarianceComputer:
                 stop=times[0],
                 num=times[1],
             )
+
         elif times is None:
-            self.evolved_states = np.array(
-                [Statevector(qc.bind_parameters(self.initial_parameters))]
-            )
+            s = Statevector(qc.bind_parameters(self.initial_parameters))
+            l = [s]
+            self.evolved_states = np.array(l)
+
         else:
             self.evolved_states = np.array(
                 [

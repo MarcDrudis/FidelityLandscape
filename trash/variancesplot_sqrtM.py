@@ -11,6 +11,9 @@ from fidlib.variance import VarianceComputer, _abs2, bound, kplus
 
 variances = np.load("variance_data_sqrtM.npy", allow_pickle=True).item()
 qubits = variances["qubits"]
+omegas = variances["Omega"]
+variances = variances["Variances"]
+
 
 # Set a consistent color palette
 colors = ["#4056A1", "#075C2F", "#7D8238", "#453F3F", "#692411", "#D79922", "#F13C20"]

@@ -21,21 +21,41 @@ degenerate_infidelity = 1 - state_fidelity(
 )
 
 print(f"The initial infidelity is {degenerate_infidelity}")
-eps = degenerate_infidelity * 1e2
+eps = degenerate_infidelity * 3
 print("At least this much:", (2 * eps / qc.num_parameters**2) ** (1 / 2))
-res = 1e-4
 
-s, v = np.linalg.eigh(ReverseQGT().run(qc, [initial_parameters]).result().qgts[0])
+s, v = np.linalg.eigh(
+    np.real(ReverseQGT().run(qc, [initial_parameters]).result().qgts[0])
+)
 rank = np.sum(s > 1e-10)
 print(s, s[-rank:])
-increments_kernel = v[:-rank] * (24 * eps / qc.num_parameters**3) ** (1 / 4)
-increments_significant = np.array() [v[-r] np.sqrt(s[-r] * 2 / qc.num_parameters**3) for r in range(1,rank+1)])
+increments_kernel = v[:-rank] * (24 * eps / qc.num_parameters**3) ** (1 / 4) * 4e-1
+increments_significant = (
+    np.array(
+        [
+            v[-r] * np.sqrt(s[-r] * 2 / qc.num_parameters**3)
+            for r in range(1, rank + 1)
+        ]
+    )
+    * 1e-3
+)
 
+increments = np.concatenate(
+    (
+        np.abs(increments_kernel),
+        np.abs(increments_significant),
+        -np.abs(increments_kernel),
+        -np.abs(increments_significant),
+    )
+)
+for i, j in product(v, v):
+    print(np.dot(np.real(i), np.real(j)))
 
-# increments = np.array(list(product((-res, 0, res), repeat=qc.num_parameters)))
 # increments = np.concatenate(
 #     (res * np.eye(qc.num_parameters), -res * np.eye(qc.num_parameters))
 # )
+#
+# print(increments)
 
 
 def f(x):

@@ -49,9 +49,9 @@ def qubit_variance(num_qubits: int, r: float, depth: str, samples: int) -> float
     return vc.direct_compute_variance(samples, r)
 
 
-rs = np.logspace(-1.5, 0, 50) * np.pi
+rs = np.logspace(-1.5, 0, 100) * np.pi
 qubits = np.arange(4, 14)
-depth = "const"
+depth = "linear"
 rng_initial_parameters = np.random.default_rng(0)
 initial_parameters_list = [
     rng_initial_parameters.uniform(
@@ -81,7 +81,7 @@ else:
 name_landscape = "landscape_shape.npy"
 if not (directory / name_landscape).is_file():
     print("simulating landscape")
-    N_directions = 50
+    N_directions = 500
     jobs = (
         delayed(infi)(n, r, "const", seed)
         for r, n, seed in product(rs, qubits, range(N_directions))

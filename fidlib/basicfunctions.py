@@ -15,7 +15,7 @@ def get_ansatz(num_qubits: int, depth: str):
     """
     if depth not in ("linear", "const"):
         raise ValueError("Depth must be either 'linear' of 'const' ")
-    reps = 6 if depth == "const" else num_qubits // 2 - 1
+    reps = 6 if depth == "const" else max(num_qubits // 2 - 1, 1)
     return EfficientSU2(num_qubits=num_qubits, reps=reps)
 
 

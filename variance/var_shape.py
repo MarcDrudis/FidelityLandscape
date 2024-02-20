@@ -37,12 +37,10 @@ def qubit_variance(num_qubits: int, r: float, depth: str, samples: int) -> float
         of the ansatz
     """
     qc = get_ansatz(int(num_qubits), depth)
-    times = None
     vc = VarianceComputer(
         qc=qc,
-        # initial_parameters=initial_parameters_list[num_qubits],
-        initial_parameters=None,
-        times=times,
+        initial_parameters=initial_parameters_list[num_qubits],
+        times=None,
         H=None,
     )
 
@@ -81,9 +79,9 @@ else:
 name_landscape = "landscape_shape.npy"
 if not (directory / name_landscape).is_file():
     print("simulating landscape")
-    N_directions = 500
+    N_directions = 100
     jobs = (
-        delayed(infi)(n, r, "const", seed)
+        delayed(infi)(n, r, depth, seed)
         for r, n, seed in product(rs, qubits, range(N_directions))
     )
     landscape = Parallel(n_jobs=11)(jobs)
@@ -145,7 +143,6 @@ for i, n in enumerate(qubits):
     axs.scatter(
         x=result["rs"] / np.pi,
         y=result["variances"][i],
-        # label=f"n={n}",
         marker=".",
         color=colors[i],
     )
@@ -165,25 +162,16 @@ for i, n in enumerate(qubits):
     )
     maximas.append(resolution_rs[np.argmax(interpolated_variance)] / np.pi)
     maxima_value.append(np.max(interpolated_variance))
-    # axs.plot(
-    #     maximas[-1],
-    #     maxima_value[-1],
-    #     marker="s",
-    #     markersize=10,
-    #     color=colors[i],
-    # )
     axs.vlines(
         x=maximas[-1],
-        # x=2 * (get_ansatz(n, "const").num_parameters) ** (-1 / 2),
-        # x=1.2 * (get_ansatz(n, "const").num_parameters) ** (-1 / 2),
         ymin=0,
         ymax=2e-2,
         color=colors[i],
     )
 
 axs.set_xlabel(r"$\frac{r}{ \pi}$")
-# axs.set_yscale("log")
-# axs.set_xscale("log")
+axs.set_yscale("log")
+axs.set_xscale("log")
 axs.legend()
 plt.show()
 

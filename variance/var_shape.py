@@ -10,15 +10,13 @@ from scipy.interpolate import CubicSpline
 from fidlib.basicfunctions import get_ansatz
 from fidlib.variance import VarianceComputer
 
-np.random.seed(1)
 directory = pathlib.Path(__file__).parent.resolve()
 
 
 def infi(num_qubits: int, r: float, depth: int, seed: int):
     qc = get_ansatz(int(num_qubits), depth)
     initial_parameters = initial_parameters_list[num_qubits]
-    np.random.seed(seed)
-    direction = np.random.uniform(-np.pi, np.pi, qc.num_parameters)
+    direction = np.random.default_rng(seed).uniform(-np.pi, np.pi, qc.num_parameters)
     return state_fidelity(
         Statevector(qc.assign_parameters(initial_parameters)),
         Statevector(
@@ -42,8 +40,8 @@ def qubit_variance(num_qubits: int, r: float, depth: str, samples: int) -> float
     times = None
     vc = VarianceComputer(
         qc=qc,
-        initial_parameters=initial_parameters_list[num_qubits],
-        # initial_parameters=None,
+        # initial_parameters=initial_parameters_list[num_qubits],
+        initial_parameters=None,
         times=times,
         H=None,
     )
@@ -51,7 +49,7 @@ def qubit_variance(num_qubits: int, r: float, depth: str, samples: int) -> float
     return vc.direct_compute_variance(samples, r)
 
 
-rs = np.logspace(-2, 0, 50) * np.pi
+rs = np.logspace(-1.5, 0, 50) * np.pi
 qubits = np.arange(4, 14)
 depth = "const"
 rng_initial_parameters = np.random.default_rng(0)
@@ -105,7 +103,7 @@ else:
 result = result_variance
 result["landscapes"] = [
     np.min(result_landscape["landscapes"][:, i, :], axis=1).T
-    for i, q in enumerate(result["qubits"])
+    for i, _ in enumerate(result["qubits"])
 ]
 
 print(result["rs"])

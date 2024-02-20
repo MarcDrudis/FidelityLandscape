@@ -21,7 +21,7 @@ def infi(num_qubits: int, r: float, depth: int, seed: int):
         Statevector(qc.assign_parameters(initial_parameters)),
         Statevector(
             qc.assign_parameters(
-                initial_parameters + direction / np.linalg.norm(direction, 1) * r
+                initial_parameters + direction / np.linalg.norm(direction, np.inf) * r
             )
         ),
     )
@@ -81,7 +81,7 @@ else:
 name_landscape = "landscape_shape.npy"
 if not (directory / name_landscape).is_file():
     print("simulating landscape")
-    N_directions = 500
+    N_directions = 50
     jobs = (
         delayed(infi)(n, r, "const", seed)
         for r, n, seed in product(rs, qubits, range(N_directions))

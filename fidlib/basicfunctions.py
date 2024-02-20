@@ -2,9 +2,9 @@ from typing import Callable
 
 import numpy as np
 import plotly.express as px
-from qiskit.algorithms import SciPyRealEvolver, TimeEvolutionProblem
 from qiskit.circuit.library import EfficientSU2
 from qiskit.quantum_info import SparsePauliOp, Statevector, state_fidelity
+from qiskit_algorithms import SciPyRealEvolver, TimeEvolutionProblem
 from scipy.optimize import approx_fprime
 
 

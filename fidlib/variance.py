@@ -22,14 +22,14 @@ class VarianceComputer:
         if isinstance(times, tuple):
             self.evolved_states = expm_multiply(
                 A=-1.0j * H.to_matrix(sparse=True),
-                B=Statevector(qc.bind_parameters(self.initial_parameters)).data,
+                B=Statevector(qc.assign_parameters(self.initial_parameters)).data,
                 start=0,
                 stop=times[0],
                 num=times[1],
             )
 
         elif times is None:
-            s = Statevector(qc.bind_parameters(self.initial_parameters))
+            s = Statevector(qc.assign_parameters(self.initial_parameters))
             l = [s]
             self.evolved_states = np.array(l)
 
@@ -38,7 +38,9 @@ class VarianceComputer:
                 [
                     expm_multiply(
                         A=-1.0j * t * H.to_matrix(sparse=True),
-                        B=Statevector(qc.bind_parameters(self.initial_parameters)).data,
+                        B=Statevector(
+                            qc.assign_parameters(self.initial_parameters)
+                        ).data,
                     )
                     for t in times
                 ]
@@ -54,7 +56,7 @@ class VarianceComputer:
         perturbed_states = np.array(
             [
                 Statevector(
-                    self.qc.bind_parameters(self.initial_parameters + dthetas[i])
+                    self.qc.assign_parameters(self.initial_parameters + dthetas[i])
                 ).data
                 for i in range(batch_size)
             ]

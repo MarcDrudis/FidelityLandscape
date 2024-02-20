@@ -1,8 +1,8 @@
-qiskit
-tqdm
 matplotlib
-plotly
-pandas
-pylatexenc
 nbformat
 numba
+pandas
+plotly
+pylatexenc
+qiskit
+tqdm

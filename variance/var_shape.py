@@ -61,8 +61,8 @@ initial_parameters_list = [
 name_variance = "var_shape.npy"
 if not (directory / name_variance).is_file():
     print("simulating")
-    jobs = (delayed(qubit_variance)(n, r, depth, 5000) for r, n in product(rs, qubits))
-    variances = Parallel(n_jobs=15)(jobs)
+    jobs = (delayed(qubit_variance)(n, r, depth, 500) for r, n in product(rs, qubits))
+    variances = Parallel(n_jobs=11)(jobs)
     variances = np.array(variances).reshape((len(rs), len(qubits))).T
 
     result_variance = {
@@ -84,7 +84,7 @@ if not (directory / name_landscape).is_file():
         delayed(infi)(n, r, "const", seed)
         for r, n, seed in product(rs, qubits, range(N_directions))
     )
-    landscape = Parallel(n_jobs=15)(jobs)
+    landscape = Parallel(n_jobs=11)(jobs)
     print(len(landscape))
     landscape = np.array(landscape).reshape((len(rs), len(qubits), N_directions))
     print(landscape.shape)

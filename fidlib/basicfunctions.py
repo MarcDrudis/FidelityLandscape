@@ -8,6 +8,17 @@ from qiskit.quantum_info import SparsePauliOp, Statevector, state_fidelity
 from scipy.optimize import approx_fprime
 
 
+def get_ansatz(num_qubits: int, depth: str):
+    """
+    Creates an ansatz with a given number of qubits and a depth that scales
+    either linearly or is constant with respect to number of qubits.
+    """
+    if depth not in ("linear", "const"):
+        raise ValueError("Depth must be either 'linear' of 'const' ")
+    reps = 6 if depth == "const" else num_qubits // 2 - 1
+    return EfficientSU2(num_qubits=num_qubits, reps=reps)
+
+
 def find_local_minima(
     fun: Callable,
     x0: np.ndarray,
@@ -39,6 +50,26 @@ def find_local_minima(
             break
 
     return x
+
+
+def qubit_variance(num_qubits: int, r: float, depth: str, samples: int) -> float:
+    """
+    Computes the variance for a given quantum circuit.
+    Args:
+        num_qubits(int): number of qubits of the system
+        r(float): side of the hypercube to sample from
+        depth(str): "linear" or "const" for the number of repetitions
+        of the ansatz
+    """
+    qc = get_ansatz(num_qubits, depth)
+    times = None
+    vc = VarianceComputer(
+        qc=qc,
+        initial_parameters=None,
+        times=times,
+        H=create_ising(num_qubits=num_qubits, j_const=0.5, g_const=-1),
+    )
+    return vc.direct_compute_variance(samples, r)
 
 
 def create_heisenberg(

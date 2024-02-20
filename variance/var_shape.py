@@ -43,6 +43,7 @@ def qubit_variance(num_qubits: int, r: float, depth: str, samples: int) -> float
     vc = VarianceComputer(
         qc=qc,
         initial_parameters=initial_parameters_list[num_qubits],
+        # initial_parameters=None,
         times=times,
         H=None,
     )
@@ -53,8 +54,11 @@ def qubit_variance(num_qubits: int, r: float, depth: str, samples: int) -> float
 rs = np.logspace(-2, 0, 50) * np.pi
 qubits = np.arange(4, 14)
 depth = "const"
+rng_initial_parameters = np.random.default_rng(0)
 initial_parameters_list = [
-    np.random.uniform(-np.pi, np.pi, get_ansatz(int(n), depth).num_parameters)
+    rng_initial_parameters.uniform(
+        -np.pi, np.pi, get_ansatz(int(n), depth).num_parameters
+    )
     for n in range(20)
 ]
 

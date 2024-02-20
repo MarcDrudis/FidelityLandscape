@@ -4,6 +4,7 @@ from itertools import product
 import matplotlib.pyplot as plt
 import numpy as np
 from joblib import Parallel, delayed
+from matplotlib.figure import SubFigure
 from qiskit.quantum_info import Statevector, state_fidelity
 from scipy.interpolate import CubicSpline
 
@@ -49,6 +50,7 @@ def qubit_variance(num_qubits: int, r: float, depth: str, samples: int) -> float
 
 rs = np.logspace(-1.5, 0, 100) * np.pi
 qubits = np.arange(4, 14)
+print(qubits)
 depth = "linear"
 rng_initial_parameters = np.random.default_rng(0)
 initial_parameters_list = [
@@ -104,9 +106,14 @@ result["landscapes"] = [
     for i, _ in enumerate(result["qubits"])
 ]
 result["rs_landscape"] = result_landscape["rs"]
+result["num_parameters"] = np.array(
+    [get_ansatz(n, depth).num_parameters for n in result["qubits"]]
+)
 print(result_landscape["landscapes"].shape)
 print(result["rs"])
+print(result["num_parameters"])
 
+###########################Plotting
 # Set a consistent color palette
 colors = [
     "#4056A1",
@@ -132,11 +139,10 @@ maxima_value = list()
 for i, n in enumerate(qubits):
     if i % 2 == 0:
         pass
-    resolution_rs = np.logspace(-2, 0, 1000) * np.pi
+    resolution_rs = np.logspace(-1.5, 0, 1000) * np.pi
     interpolated_variance = CubicSpline(result["rs"] / np.pi, result["variances"][i])(
         resolution_rs / np.pi
     )
-<<<<<<< HEAD
     maximas.append(resolution_rs[np.argmax(interpolated_variance)] / np.pi)
     maxima_value.append(np.max(interpolated_variance))
     if n % 2 == 0:
@@ -162,72 +168,47 @@ for i, n in enumerate(qubits):
             linestyle="--",
             alpha=0.4,
         )
-        # axs.plot(
-        #     maximas[-1],
-        #     maxima_value[-1],
-        #     marker="s",
-        #     markersize=10,
-        #     color=colors[i],
-        # )
         axs.vlines(
             x=maximas[-1],
-            # x=2 * (get_ansatz(n, "const").num_parameters) ** (-1 / 2),
-            # x=1.2 * (get_ansatz(n, "const").num_parameters) ** (-1 / 2),
             ymin=0,
             ymax=2e-2,
             color=colors[i],
         )
-=======
-
-    interpolated_landscape = CubicSpline(
-        result["rs_landscape"][i] / np.pi, result["landscape"][i]
-    )(resolution_rs / np.pi)
-    axs.scatter(
-        x=result["rs"] / np.pi,
-        y=result["variances"][i],
-        marker=".",
-        color=colors[i],
-    )
-    axs.plot(
-        resolution_rs / np.pi,
-        interpolated_variance,
-        label=f"n={n}",
-        color=colors[i],
-    )
-    ax2.plot(
-        result["rs_landscape"] / np.pi,
-        1 - interpolated_variance,
-        label=f"n={n}",
-        color=colors[i],
-        marker=".",
-        alpha=0.4,
-    )
-    maximas.append(resolution_rs[np.argmax(interpolated_variance)] / np.pi)
-    maxima_value.append(np.max(interpolated_variance))
-    axs.vlines(
-        x=maximas[-1],
-        ymin=0,
-        ymax=2e-2,
-        color=colors[i],
-    )
->>>>>>> 58c32ede9576a631f63de860c12a1891b75d34c2
 
 axs.set_xlabel(r"$\frac{r}{ \pi}$")
 axs.set_yscale("log")
 axs.set_xscale("log")
 axs.legend()
 plt.show()
-
-plt.scatter(result["qubits"], maximas, label=r"$r_{max}$")
-plt.plot(
-    result["qubits"], result["qubits"] ** (-0.55) * 0.35, label=r"0.35*$n^{-0.55}$"
+########Plot scalings
+coeff, prefactor = np.polyfit(np.log10(result["num_parameters"]), np.log10(maximas), 1)
+fig, ax = plt.subplots(1, 1, figsize=(14, 10))
+ax.scatter(result["num_parameters"], maximas, label=r"$r_{max}$")
+ax.plot(
+    result["num_parameters"],
+    result["num_parameters"] ** coeff * 10**prefactor,
+    label=f"${{{prefactor:.2f}}}m^{{{coeff:.2f}}}$",
 )
-plt.title("r that maximizes the variance")
-plt.legend()
+ax.legend()
+ax.set_yscale("log")
+ax.set_xscale("log")
+ax.set_xlabel(r"$m$")
+ax.set_ylabel(r"$r$")
 plt.show()
 
-plt.scatter(result["qubits"], maxima_value, label="Maxima Value")
-plt.plot(result["qubits"], result["qubits"] ** (-2.0) * 0.2, label=r"$0.2*n^{-2}$")
-plt.title("Maximum value of the Variance")
-plt.legend()
+coeff, prefactor = np.polyfit(
+    np.log10(result["num_parameters"]), np.log10(maxima_value), 1
+)
+fig, ax = plt.subplots(1, 1, figsize=(14, 10))
+ax.scatter(result["num_parameters"], maxima_value, label=r"Var$[\mathcal{L}]_{max}$")
+ax.plot(
+    result["num_parameters"],
+    result["num_parameters"] ** coeff * 10**prefactor,
+    label=f"${{{prefactor:.2f}}}m^{{{coeff:.2f}}}$",
+)
+ax.legend()
+ax.set_xlabel(r"$m$")
+ax.set_ylabel(r"Variance")
+ax.set_yscale("log")
+ax.set_xscale("log")
 plt.show()

@@ -81,7 +81,7 @@ else:
 name_landscape = "landscape_shape.npy"
 if not (directory / name_landscape).is_file():
     print("simulating landscape")
-    N_directions = 20
+    N_directions = 500
     jobs = (
         delayed(infi)(n, r, "const", seed)
         for r, n, seed in product(rs, qubits, range(N_directions))
@@ -102,9 +102,10 @@ else:
 
 result = result_variance
 result["landscapes"] = [
-    np.mean(result_landscape["landscapes"][:, i, :], axis=1).T
+    np.min(result_landscape["landscapes"][:, i, :], axis=1).T
     for i, _ in enumerate(result["qubits"])
 ]
+result["rs_landscape"] = result_landscape["rs"]
 
 print(result["rs"])
 
@@ -131,7 +132,7 @@ maxima_value = list()
 
 
 for i, n in enumerate(qubits):
-    resolution_rs = np.logspace(-2, 0, 1000)
+    resolution_rs = np.logspace(-2, 0, 1000) * np.pi
     interpolated_variance = CubicSpline(result["rs"] / np.pi, result["variances"][i])(
         resolution_rs / np.pi
     )
@@ -149,7 +150,7 @@ for i, n in enumerate(qubits):
         color=colors[i],
     )
     ax2.plot(
-        result["rs"] / np.pi,
+        result["rs_landscape"] / np.pi,
         result["landscapes"][i],
         label=f"n={n}",
         color=colors[i],

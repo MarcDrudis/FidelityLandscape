@@ -132,6 +132,8 @@ maxima_value = list()
 
 
 for i, n in enumerate(qubits):
+    if i % 2 == 0:
+        pass
     resolution_rs = np.logspace(-2, 0, 1000) * np.pi
     interpolated_variance = CubicSpline(result["rs"] / np.pi, result["variances"][i])(
         resolution_rs / np.pi
@@ -151,7 +153,7 @@ for i, n in enumerate(qubits):
     )
     ax2.plot(
         result["rs_landscape"] / np.pi,
-        result["landscapes"][i],
+        1 - result["landscapes"][i],
         label=f"n={n}",
         color=colors[i],
         marker=".",

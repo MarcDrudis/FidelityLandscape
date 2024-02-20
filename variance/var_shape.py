@@ -138,47 +138,50 @@ for i, n in enumerate(qubits):
     interpolated_variance = CubicSpline(result["rs"] / np.pi, result["variances"][i])(
         resolution_rs / np.pi
     )
-    axs.scatter(
-        x=result["rs"] / np.pi,
-        y=result["variances"][i],
-        # label=f"n={n}",
-        marker=".",
-        color=colors[i],
-    )
-    axs.plot(
-        resolution_rs / np.pi,
-        interpolated_variance,
-        label=f"n={n}",
-        color=colors[i],
-    )
-    ax2.plot(
-        result["rs_landscape"] / np.pi,
-        1 - result["landscapes"][i],
-        label=f"n={n}",
-        color=colors[i],
-        marker=".",
-    )
     maximas.append(resolution_rs[np.argmax(interpolated_variance)] / np.pi)
     maxima_value.append(np.max(interpolated_variance))
-    # axs.plot(
-    #     maximas[-1],
-    #     maxima_value[-1],
-    #     marker="s",
-    #     markersize=10,
-    #     color=colors[i],
-    # )
-    axs.vlines(
-        x=maximas[-1],
-        # x=2 * (get_ansatz(n, "const").num_parameters) ** (-1 / 2),
-        # x=1.2 * (get_ansatz(n, "const").num_parameters) ** (-1 / 2),
-        ymin=0,
-        ymax=2e-2,
-        color=colors[i],
-    )
+    if n % 2 == 0:
+        axs.scatter(
+            x=result["rs"] / np.pi,
+            y=result["variances"][i],
+            # label=f"n={n}",
+            marker=".",
+            color=colors[i],
+        )
+        axs.plot(
+            resolution_rs / np.pi,
+            interpolated_variance,
+            label=f"n={n}",
+            color=colors[i],
+        )
+        ax2.plot(
+            result["rs_landscape"] / np.pi,
+            1 - result["landscapes"][i],
+            label=f"n={n}",
+            color=colors[i],
+            marker="x",
+            linestyle="--",
+            alpha=0.4,
+        )
+        # axs.plot(
+        #     maximas[-1],
+        #     maxima_value[-1],
+        #     marker="s",
+        #     markersize=10,
+        #     color=colors[i],
+        # )
+        axs.vlines(
+            x=maximas[-1],
+            # x=2 * (get_ansatz(n, "const").num_parameters) ** (-1 / 2),
+            # x=1.2 * (get_ansatz(n, "const").num_parameters) ** (-1 / 2),
+            ymin=0,
+            ymax=2e-2,
+            color=colors[i],
+        )
 
 axs.set_xlabel(r"$\frac{r}{ \pi}$")
-# axs.set_yscale("log")
-# axs.set_xscale("log")
+axs.set_yscale("log")
+axs.set_xscale("log")
 axs.legend()
 plt.show()
 

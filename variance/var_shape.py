@@ -49,9 +49,9 @@ def qubit_variance(num_qubits: int, r: float, depth: str, samples: int) -> float
     return vc.direct_compute_variance(samples, r)
 
 
-rs = np.logspace(-1.5, 0, 50) * np.pi
+rs = np.logspace(-1.5, 0, 100) * np.pi
 qubits = np.arange(4, 14)
-depth = "const"
+depth = "linear"
 rng_initial_parameters = np.random.default_rng(0)
 initial_parameters_list = [
     rng_initial_parameters.uniform(
@@ -81,7 +81,7 @@ else:
 name_landscape = "landscape_shape.npy"
 if not (directory / name_landscape).is_file():
     print("simulating landscape")
-    N_directions = 50
+    N_directions = 500
     jobs = (
         delayed(infi)(n, r, "const", seed)
         for r, n, seed in product(rs, qubits, range(N_directions))
@@ -138,6 +138,10 @@ for i, n in enumerate(qubits):
     interpolated_variance = CubicSpline(result["rs"] / np.pi, result["variances"][i])(
         resolution_rs / np.pi
     )
+
+    interpolated_landscape = CubicSpline(
+        result["rs_landscape"][i] / np.pi, result["landscape"][i]
+    )(resolution_rs / np.pi)
     axs.scatter(
         x=result["rs"] / np.pi,
         y=result["variances"][i],
@@ -153,10 +157,11 @@ for i, n in enumerate(qubits):
     )
     ax2.plot(
         result["rs_landscape"] / np.pi,
-        1 - result["landscapes"][i],
+        1 - interpolated_variance,
         label=f"n={n}",
         color=colors[i],
         marker=".",
+        alpha=0.4,
     )
     maximas.append(resolution_rs[np.argmax(interpolated_variance)] / np.pi)
     maxima_value.append(np.max(interpolated_variance))

@@ -37,12 +37,10 @@ def qubit_variance(num_qubits: int, r: float, depth: str, samples: int) -> float
         of the ansatz
     """
     qc = get_ansatz(int(num_qubits), depth)
-    times = None
     vc = VarianceComputer(
         qc=qc,
-        # initial_parameters=initial_parameters_list[num_qubits],
-        initial_parameters=None,
-        times=times,
+        initial_parameters=initial_parameters_list[num_qubits],
+        times=None,
         H=None,
     )
 
@@ -81,9 +79,9 @@ else:
 name_landscape = "landscape_shape.npy"
 if not (directory / name_landscape).is_file():
     print("simulating landscape")
-    N_directions = 500
+    N_directions = 100
     jobs = (
-        delayed(infi)(n, r, "const", seed)
+        delayed(infi)(n, r, depth, seed)
         for r, n, seed in product(rs, qubits, range(N_directions))
     )
     landscape = Parallel(n_jobs=11)(jobs)
@@ -138,6 +136,7 @@ for i, n in enumerate(qubits):
     interpolated_variance = CubicSpline(result["rs"] / np.pi, result["variances"][i])(
         resolution_rs / np.pi
     )
+<<<<<<< HEAD
     maximas.append(resolution_rs[np.argmax(interpolated_variance)] / np.pi)
     maxima_value.append(np.max(interpolated_variance))
     if n % 2 == 0:
@@ -178,6 +177,40 @@ for i, n in enumerate(qubits):
             ymax=2e-2,
             color=colors[i],
         )
+=======
+
+    interpolated_landscape = CubicSpline(
+        result["rs_landscape"][i] / np.pi, result["landscape"][i]
+    )(resolution_rs / np.pi)
+    axs.scatter(
+        x=result["rs"] / np.pi,
+        y=result["variances"][i],
+        marker=".",
+        color=colors[i],
+    )
+    axs.plot(
+        resolution_rs / np.pi,
+        interpolated_variance,
+        label=f"n={n}",
+        color=colors[i],
+    )
+    ax2.plot(
+        result["rs_landscape"] / np.pi,
+        1 - interpolated_variance,
+        label=f"n={n}",
+        color=colors[i],
+        marker=".",
+        alpha=0.4,
+    )
+    maximas.append(resolution_rs[np.argmax(interpolated_variance)] / np.pi)
+    maxima_value.append(np.max(interpolated_variance))
+    axs.vlines(
+        x=maximas[-1],
+        ymin=0,
+        ymax=2e-2,
+        color=colors[i],
+    )
+>>>>>>> 58c32ede9576a631f63de860c12a1891b75d34c2
 
 axs.set_xlabel(r"$\frac{r}{ \pi}$")
 axs.set_yscale("log")

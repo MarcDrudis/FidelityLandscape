@@ -65,7 +65,7 @@ initial_parameters_list = [
 name_variance = "var_shape.npy"
 if not (directory / name_variance).is_file():
     print("simulating")
-    jobs = (delayed(qubit_variance)(n, r, depth, 500) for r, n in product(rs, qubits))
+    jobs = (delayed(qubit_variance)(n, r, depth, 5000) for r, n in product(rs, qubits))
     variances = Parallel(n_jobs=11)(jobs)
     variances = np.array(variances).reshape((len(rs), len(qubits))).T
 

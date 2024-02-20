@@ -102,7 +102,7 @@ else:
 
 result = result_variance
 result["landscapes"] = [
-    np.min(result_landscape["landscapes"][:, i, :], axis=1).T
+    np.mean(result_landscape["landscapes"][:, i, :], axis=1).T
     for i, _ in enumerate(result["qubits"])
 ]
 

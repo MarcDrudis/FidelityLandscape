@@ -21,7 +21,7 @@ def infi(num_qubits: int, r: float, depth: int, seed: int):
         Statevector(qc.assign_parameters(initial_parameters)),
         Statevector(
             qc.assign_parameters(
-                initial_parameters + direction / np.linalg.norm(direction) * r
+                initial_parameters + direction / np.linalg.norm(direction, 1) * r
             )
         ),
     )
@@ -102,11 +102,11 @@ else:
 
 result = result_variance
 result["landscapes"] = [
-    np.min(result_landscape["landscapes"][:, i, :], axis=1).T
+    np.mean(result_landscape["landscapes"][:, i, :], axis=1).T
     for i, _ in enumerate(result["qubits"])
 ]
 result["rs_landscape"] = result_landscape["rs"]
-
+print(result_landscape["landscapes"].shape)
 print(result["rs"])
 
 # Set a consistent color palette
@@ -140,7 +140,7 @@ for i, n in enumerate(qubits):
         x=result["rs"] / np.pi,
         y=result["variances"][i],
         # label=f"n={n}",
-        marker="x",
+        marker=".",
         color=colors[i],
     )
     axs.plot(
@@ -158,6 +158,13 @@ for i, n in enumerate(qubits):
     )
     maximas.append(resolution_rs[np.argmax(interpolated_variance)] / np.pi)
     maxima_value.append(np.max(interpolated_variance))
+    # axs.plot(
+    #     maximas[-1],
+    #     maxima_value[-1],
+    #     marker="s",
+    #     markersize=10,
+    #     color=colors[i],
+    # )
     axs.vlines(
         x=maximas[-1],
         # x=2 * (get_ansatz(n, "const").num_parameters) ** (-1 / 2),

@@ -1,0 +1,7 @@
+axes.titlesize: medium
+figure.titlesize: medium
+font.size : 12.0
+font.family: Times New Roman
+text.usetex: True
+text.latex.preamble: \usepackage{amsmath}\usepackage{amssymb}\usepackage{physics}\usepackage{siunitx}[=v2]
+errorbar.capsize: 2

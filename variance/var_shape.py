@@ -4,14 +4,19 @@ from itertools import product
 import matplotlib.pyplot as plt
 import numpy as np
 from joblib import Parallel, delayed
-from matplotlib.figure import SubFigure
+from qiskit.pulse import num_qubits
 from qiskit.quantum_info import Statevector, state_fidelity
 from scipy.interpolate import CubicSpline
 
 from fidlib.basicfunctions import get_ansatz
 from fidlib.variance import VarianceComputer
 
+plt.style.use(
+    "/home/marc/Documents/Fidelity/FidelityLandscape/plots/plot_style.mplstyle"
+)
+
 directory = pathlib.Path(__file__).parent.resolve()
+depth = "const"
 
 
 def infi(num_qubits: int, r: float, depth: int, seed: int):
@@ -48,10 +53,8 @@ def qubit_variance(num_qubits: int, r: float, depth: str, samples: int) -> float
     return vc.direct_compute_variance(samples, r)
 
 
-rs = np.logspace(-1.5, 0, 100) * np.pi
+rs = np.logspace(-1.5, 0, 50) * np.pi
 qubits = np.arange(4, 14)
-print(qubits)
-depth = "linear"
 rng_initial_parameters = np.random.default_rng(0)
 initial_parameters_list = [
     rng_initial_parameters.uniform(
@@ -60,10 +63,19 @@ initial_parameters_list = [
     for n in range(20)
 ]
 
-name_variance = "var_shape.npy"
+name_variance = f"var_shape_{depth}.npy"
 if not (directory / name_variance).is_file():
     print("simulating")
-    jobs = (delayed(qubit_variance)(n, r, depth, 20000) for r, n in product(rs, qubits))
+    jobs = (
+        delayed(qubit_variance)(
+            n,
+            r,
+            depth,
+            # 20000,
+            5000,
+        )
+        for r, n in product(rs, qubits)
+    )
     variances = Parallel(n_jobs=11)(jobs)
     variances = np.array(variances).reshape((len(rs), len(qubits))).T
 
@@ -78,7 +90,7 @@ else:
     result_variance = np.load(directory / name_variance, allow_pickle=True).item()
 
 
-name_landscape = "landscape_shape.npy"
+name_landscape = f"landscape_shape_{depth}.npy"
 if not (directory / name_landscape).is_file():
     print("simulating landscape")
     N_directions = 100
@@ -87,9 +99,7 @@ if not (directory / name_landscape).is_file():
         for r, n, seed in product(rs, qubits, range(N_directions))
     )
     landscape = Parallel(n_jobs=11)(jobs)
-    print(len(landscape))
     landscape = np.array(landscape).reshape((len(rs), len(qubits), N_directions))
-    print(landscape.shape)
     result_landscape = {
         "qubits": qubits,
         "rs": rs,
@@ -109,9 +119,6 @@ result["rs_landscape"] = result_landscape["rs"]
 result["num_parameters"] = np.array(
     [get_ansatz(n, depth).num_parameters for n in result["qubits"]]
 )
-print(result_landscape["landscapes"].shape)
-print(result["rs"])
-print(result["num_parameters"])
 
 ###########################Plotting
 # Set a consistent color palette
@@ -125,20 +132,23 @@ colors = [
     "#F13C20",
 ] * 2
 
-plt.rcParams.update({"font.size": 12})
-plt.rc("text", usetex=True)
-plt.rc("font", family="Times New Roman")
-plt.rcParams.update({"errorbar.capsize": 2})
+# fig, axs = plt.subplots(3, 1, figsize=(5, 12))
+# fig.tight_layout(pad=1.0)
 
-fig, axs = plt.subplots(1, 1, figsize=(14, 10))
-ax2 = axs.twinx()
+
+fig = plt.figure(layout="constrained", figsize=(8, 4))
+subfigs = fig.subfigures(1, 2, wspace=0.07, width_ratios=[1.5, 1])
+axA = subfigs[0].subplots(1, 1)
+axB = subfigs[1].subplots(2, 1)
+
+axs = [axA, axB[0], axB[1]]
+
+ax2 = axs[0].twinx()
 maximas = list()
 maxima_value = list()
 
 
 for i, n in enumerate(qubits):
-    if i % 2 == 0:
-        pass
     resolution_rs = np.logspace(-1.5, 0, 1000) * np.pi
     interpolated_variance = CubicSpline(result["rs"] / np.pi, result["variances"][i])(
         resolution_rs / np.pi
@@ -146,14 +156,14 @@ for i, n in enumerate(qubits):
     maximas.append(resolution_rs[np.argmax(interpolated_variance)] / np.pi)
     maxima_value.append(np.max(interpolated_variance))
     if n % 2 == 0:
-        axs.scatter(
+        axs[0].scatter(
             x=result["rs"] / np.pi,
             y=result["variances"][i],
             # label=f"n={n}",
             marker=".",
             color=colors[i],
         )
-        axs.plot(
+        axs[0].plot(
             resolution_rs / np.pi,
             interpolated_variance,
             label=f"n={n}",
@@ -168,47 +178,100 @@ for i, n in enumerate(qubits):
             linestyle="--",
             alpha=0.4,
         )
-        axs.vlines(
+        axs[0].vlines(
             x=maximas[-1],
             ymin=0,
             ymax=2e-2,
             color=colors[i],
         )
 
-axs.set_xlabel(r"$\frac{r}{ \pi}$")
-axs.set_yscale("log")
-axs.set_xscale("log")
-axs.legend()
-plt.show()
+axs[0].set_xlabel(r"Size of Hypercube, $\frac{r}{ \pi}$")
+axs[0].set_ylabel(r"Var. in Hypercube, $\mathrm{Var}[ \mathcal{L} ]$")
+ax2.set_ylabel(r"Infidelity, $\mathcal{L}(\norm{\mathbf{\theta}}_{\infty}=r)$")
+axs[0].set_yscale("log")
+axs[0].set_xscale("log")
+
+
+from matplotlib.legend_handler import HandlerBase
+
+
+class MarkerHandler(HandlerBase):
+    def create_artists(
+        self, legend, tup, xdescent, ydescent, width, height, fontsize, trans
+    ):
+        return [
+            plt.Line2D(
+                [width / 2],
+                [height / 2.0],
+                ls="",
+                marker=tup[1],
+                color=tup[0],
+                transform=trans,
+            )
+        ]
+
+
+print(
+    [(colors[i], "s") for i in range(0, len(qubits), 2)],
+    [f"n={n}" for n in qubits[::2]],
+)
+axs[0].legend(
+    [(colors[i], "s") for i in range(0, len(qubits), 2)],
+    [f"n={n}" for n in qubits[::2]],
+    handler_map={tuple: MarkerHandler()},
+    bbox_to_anchor=(0, 1.02, 1, 0.2),
+    loc="lower left",
+    mode="expand",
+    handletextpad=0,
+    borderaxespad=0,
+    ncol=5,
+)
+ax2.legend(
+    [("black", "."), ("black", "x")],
+    [r"$\mathrm{Var}[\mathcal{L}]$", r"$\mathcal{L}$"],
+    handler_map={tuple: MarkerHandler()},
+    bbox_to_anchor=(-0.03, 1),
+    loc="upper left",
+    handletextpad=0,
+    borderaxespad=0,
+    ncol=1,
+    frameon=False,
+)
 ########Plot scalings
 coeff, prefactor = np.polyfit(np.log10(result["num_parameters"]), np.log10(maximas), 1)
-fig, ax = plt.subplots(1, 1, figsize=(14, 10))
-ax.scatter(result["num_parameters"], maximas, label=r"$r_{max}$")
-ax.plot(
+axs[1].scatter(result["num_parameters"], maximas, label=r"$r_{max}$", color=colors[0])
+axs[1].plot(
     result["num_parameters"],
     result["num_parameters"] ** coeff * 10**prefactor,
-    label=f"${{{prefactor:.2f}}}m^{{{coeff:.2f}}}$",
+    label=f"${{{10**prefactor:.2f}}}m^{{{coeff:.2f}}}$",
+    color=colors[1],
 )
-ax.legend()
-ax.set_yscale("log")
-ax.set_xscale("log")
-ax.set_xlabel(r"$m$")
-ax.set_ylabel(r"$r$")
-plt.show()
+axs[1].legend(frameon=False, loc="upper right", bbox_to_anchor=(1.05, 1.05))
+axs[1].set_yscale("log", base=2)
+axs[1].set_xscale("log", base=2)
+axs[1].tick_params(labelbottom=False)
+# axs[1].set_xlabel(r"$m$")
+axs[1].set_ylabel(r"Argmax of Var., $r_{max}$")
 
 coeff, prefactor = np.polyfit(
     np.log10(result["num_parameters"]), np.log10(maxima_value), 1
 )
-fig, ax = plt.subplots(1, 1, figsize=(14, 10))
-ax.scatter(result["num_parameters"], maxima_value, label=r"Var$[\mathcal{L}]_{max}$")
-ax.plot(
+axs[2].scatter(
+    result["num_parameters"],
+    maxima_value,
+    label=r"Var$[\mathcal{L}]_{max}$",
+    color=colors[0],
+)
+axs[2].plot(
     result["num_parameters"],
     result["num_parameters"] ** coeff * 10**prefactor,
-    label=f"${{{prefactor:.2f}}}m^{{{coeff:.2f}}}$",
+    label=f"${{{10**prefactor:.2f}}}m^{{{coeff:.2f}}}$",
+    color=colors[1],
 )
-ax.legend()
-ax.set_xlabel(r"$m$")
-ax.set_ylabel(r"Variance")
-ax.set_yscale("log")
-ax.set_xscale("log")
-plt.show()
+axs[2].legend(frameon=False, loc="upper right", bbox_to_anchor=(1.05, 1.05))
+axs[2].set_xlabel(r"Number of Parameters, $m$")
+axs[2].set_ylabel(r"Max. Var. Value")
+axs[2].set_yscale("log", base=2)
+axs[2].set_xscale("log", base=2)
+fig.savefig(directory.parent / f"plots/variance_{depth}.svg")
+fig.savefig(directory.parent / f"plots/variance_{depth}.png")

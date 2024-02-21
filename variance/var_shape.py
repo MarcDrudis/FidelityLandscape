@@ -13,7 +13,7 @@ from fidlib.variance import VarianceComputer
 
 directory = pathlib.Path(__file__).parent.resolve()
 plt.style.use(directory.parent / "plots/plot_style.mplstyle")
-depth = "linear"
+depth = "const"
 
 
 def infi(num_qubits: int, r: float, depth: int, seed: int):
@@ -272,4 +272,3 @@ axs[2].set_yscale("log", base=2)
 axs[2].set_xscale("log", base=2)
 fig.savefig(directory.parent / f"plots/variance_{depth}.svg")
 fig.savefig(directory.parent / f"plots/variance_{depth}.png")
-fig.savefig(directory.parent / f"plots/variance_{depth}.pdf")

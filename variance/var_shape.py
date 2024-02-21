@@ -12,7 +12,7 @@ from fidlib.basicfunctions import get_ansatz
 from fidlib.variance import VarianceComputer
 
 directory = pathlib.Path(__file__).parent.resolve()
-plt.style.use(directory.parent / "/plots/plot_style.mplstyle")
+plt.style.use(directory.parent / "plots/plot_style.mplstyle")
 depth = "const"
 
 

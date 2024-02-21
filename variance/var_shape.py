@@ -11,11 +11,8 @@ from scipy.interpolate import CubicSpline
 from fidlib.basicfunctions import get_ansatz
 from fidlib.variance import VarianceComputer
 
-plt.style.use(
-    "/home/marc/Documents/Fidelity/FidelityLandscape/plots/plot_style.mplstyle"
-)
-
 directory = pathlib.Path(__file__).parent.resolve()
+plt.style.use(directory.parent / "/plots/plot_style.mplstyle")
 depth = "const"
 
 

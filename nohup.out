@@ -18,3 +18,80 @@ Traceback (most recent call last):
     raise OSError(
 OSError: PosixPath('/plots/plot_style.mplstyle') is not a valid package style, path of style file, URL of style file, or library style name (library styles are listed in `style.available`)
 simulating
+simulating landscape
+[('#4056A1', 's'), ('#7D8238', 's'), ('#692411', 's'), ('#F13C20', 's'), ('#075C2F', 's')] ['n=4', 'n=6', 'n=8', 'n=10', 'n=12']
+Traceback (most recent call last):
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/texmanager.py", line 250, in _run_checked_subprocess
+    report = subprocess.check_output(
+  File "/usr/lib/python3.10/subprocess.py", line 421, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+  File "/usr/lib/python3.10/subprocess.py", line 503, in run
+    with Popen(*popenargs, **kwargs) as process:
+  File "/usr/lib/python3.10/subprocess.py", line 971, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.10/subprocess.py", line 1863, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'latex'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/FidelityLandscape/variance/var_shape.py", line 273, in <module>
+    fig.savefig(directory.parent / f"plots/variance_{depth}.svg")
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/figure.py", line 3390, in savefig
+    self.canvas.print_figure(fname, **kwargs)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/backend_bases.py", line 2164, in print_figure
+    self.figure.draw(renderer)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/artist.py", line 95, in draw_wrapper
+    result = draw(artist, renderer, *args, **kwargs)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/artist.py", line 72, in draw_wrapper
+    return draw(artist, renderer)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/figure.py", line 3148, in draw
+    self.get_layout_engine().execute(self)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/layout_engine.py", line 273, in execute
+    return do_constrained_layout(fig, w_pad=w_pad, h_pad=h_pad,
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/_constrained_layout.py", line 116, in do_constrained_layout
+    make_layout_margins(layoutgrids, fig, renderer, h_pad=h_pad,
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/_constrained_layout.py", line 361, in make_layout_margins
+    make_layout_margins(layoutgrids, sfig, renderer,
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/_constrained_layout.py", line 381, in make_layout_margins
+    pos, bbox = get_pos_and_bbox(ax, renderer)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/_constrained_layout.py", line 634, in get_pos_and_bbox
+    tightbbox = martist._get_tightbbox_for_layout_only(ax, renderer)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/artist.py", line 1411, in _get_tightbbox_for_layout_only
+    return obj.get_tightbbox(*args, **{**kwargs, "for_layout_only": True})
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/_api/deprecation.py", line 454, in wrapper
+    return func(*args, **kwargs)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/axes/_base.py", line 4395, in get_tightbbox
+    ba = martist._get_tightbbox_for_layout_only(axis, renderer)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/artist.py", line 1411, in _get_tightbbox_for_layout_only
+    return obj.get_tightbbox(*args, **{**kwargs, "for_layout_only": True})
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/axis.py", line 1336, in get_tightbbox
+    self._update_label_position(renderer)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/axis.py", line 2368, in _update_label_position
+    bboxes, bboxes2 = self._get_tick_boxes_siblings(renderer=renderer)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/axis.py", line 2161, in _get_tick_boxes_siblings
+    tlb, tlb2 = axis._get_ticklabel_bboxes(ticks_to_draw, renderer)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/axis.py", line 1315, in _get_ticklabel_bboxes
+    return ([tick.label1.get_window_extent(renderer)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/axis.py", line 1315, in <listcomp>
+    return ([tick.label1.get_window_extent(renderer)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/text.py", line 956, in get_window_extent
+    bbox, info, descent = self._get_layout(self._renderer)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/text.py", line 373, in _get_layout
+    _, lp_h, lp_d = _get_text_metrics_with_cache(
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/text.py", line 69, in _get_text_metrics_with_cache
+    return _get_text_metrics_with_cache_impl(
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/text.py", line 77, in _get_text_metrics_with_cache_impl
+    return renderer_ref().get_text_width_height_descent(text, fontprop, ismath)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/backends/backend_svg.py", line 1287, in get_text_width_height_descent
+    return self._text2path.get_text_width_height_descent(s, prop, ismath)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/textpath.py", line 52, in get_text_width_height_descent
+    return TexManager().get_text_width_height_descent(s, fontsize)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/texmanager.py", line 363, in get_text_width_height_descent
+    dvifile = cls.make_dvi(tex, fontsize)
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/texmanager.py", line 295, in make_dvi
+    cls._run_checked_subprocess(
+  File "/home/ubuntu/pyenvs/fidelity/lib/python3.10/site-packages/matplotlib/texmanager.py", line 254, in _run_checked_subprocess
+    raise RuntimeError(
+RuntimeError: Failed to process string with tex because latex could not be found

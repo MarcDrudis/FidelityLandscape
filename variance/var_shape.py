@@ -13,7 +13,7 @@ from fidlib.variance import VarianceComputer
 
 directory = pathlib.Path(__file__).parent.resolve()
 plt.style.use(directory.parent / "plots/plot_style.mplstyle")
-depth = "const"
+depth = "linear"
 
 
 def infi(num_qubits: int, r: float, depth: int, seed: int):
@@ -132,8 +132,14 @@ colors = [
 # fig, axs = plt.subplots(3, 1, figsize=(5, 12))
 # fig.tight_layout(pad=1.0)
 
+# The size of our document
+# width_document = 246 / 72.27
+width_document = 510 / 72.27
 
-fig = plt.figure(layout="constrained", figsize=(8, 4))
+fig = plt.figure(
+    layout="constrained",
+    figsize=(width_document, width_document / 2),
+)
 subfigs = fig.subfigures(1, 2, wspace=0.07, width_ratios=[1.5, 1])
 axA = subfigs[0].subplots(1, 1)
 axB = subfigs[1].subplots(2, 1)

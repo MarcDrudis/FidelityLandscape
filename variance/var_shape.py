@@ -13,7 +13,7 @@ from fidlib.variance import VarianceComputer
 
 directory = pathlib.Path(__file__).parent.resolve()
 plt.style.use(directory.parent / "plots/plot_style.mplstyle")
-depth = "const"
+depth = "linear"
 
 
 def infi(num_qubits: int, r: float, depth: int, seed: int):
@@ -68,8 +68,8 @@ if not (directory / name_variance).is_file():
             n,
             r,
             depth,
-            # 20000,
-            5000,
+            20000,
+            # 5000,
         )
         for r, n in product(rs, qubits)
     )

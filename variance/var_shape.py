@@ -68,8 +68,8 @@ if not (directory / name_variance).is_file():
             n,
             r,
             depth,
-            # 20000,
-            5000,
+            20000,
+            # 5000,
         )
         for r, n in product(rs, qubits)
     )

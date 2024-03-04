@@ -98,10 +98,10 @@ def create_heisenberg(
 
 def create_ising(
     num_qubits: int,
-    j_const: float,
-    g_const: float,
+    zz_const: float,
+    z_const: float,
     circular: bool = False,
-    nonint_const: float = 0,
+    x_const: float = 0,
 ) -> SparsePauliOp:
     """Creates an Heisenberg Hamiltonian on a lattice."""
     zz_op = ["I" * i + "ZZ" + "I" * (num_qubits - i - 2) for i in range(num_qubits - 1)]
@@ -112,9 +112,9 @@ def create_ising(
     x_op = ["I" * i + "X" + "I" * (num_qubits - i - 1) for i in range(num_qubits)]
 
     return (
-        SparsePauliOp(zz_op + circ_op) * j_const
-        + SparsePauliOp(z_op) * g_const
-        + SparsePauliOp(x_op) * nonint_const
+        SparsePauliOp(zz_op + circ_op) * zz_const
+        + SparsePauliOp(z_op) * z_const
+        + SparsePauliOp(x_op) * x_const
     )
 
 

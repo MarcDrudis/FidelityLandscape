@@ -93,7 +93,7 @@ plt.plot(
 plt.grid()
 plt.show()
 
-resolution = 20
+resolution = 50
 grid_axis = np.linspace(-0.8, 1.8, resolution)
 grid = product(*(2 * [grid_axis]))
 
@@ -150,7 +150,7 @@ for splitter in splitters:
     heatmap = ax.imshow(
         image, cmap="viridis_r", norm=LogNorm(), extent=[-0.8, 1.8, 1.8, -0.8]
     )
-    print(data["perturbation"][-1].dot(splitters[0]))
+    # print(data["perturbation"][-1].dot(splitters[0]))
     ax.scatter(x=[0, 1], y=[0, 1], marker="x")
     fig.colorbar(heatmap, ax=ax)
     plt.show()

@@ -7,7 +7,7 @@ from joblib import Parallel, delayed
 from qiskit.quantum_info import SparsePauliOp, Statevector, state_fidelity
 from scipy.sparse.linalg import expm_multiply
 
-directory = pathlib.Path(__file__).parent.resolve()
+directory = pathlib.Path(__file__).parents[1].resolve() / "moving_minima"
 name = "weird_cuts.npy"
 plt.style.use(directory.parent / "plots/plot_style.mplstyle")
 # terms = [("Y", -0.95), ("ZZ", 1)]
@@ -50,7 +50,6 @@ if not (directory / terms / name).exists():
     new_parameters_array = data["initial_parameters"] + data["perturbation"]
     unit_cuts = [p / np.linalg.norm(p, ord=np.inf) for p in data["perturbation"][1:]]
     unit_cuts = [unit_cuts[0]] + unit_cuts
-    unit_cuts = [unit_cuts[4]] * 4 + unit_cuts[4:]
 
     landscapes = [
         Parallel(n_jobs=11)(
@@ -89,11 +88,11 @@ width_document = 510 / 72.27
 fig, axs = plt.subplots(1, 2, figsize=(width_document, width_document / 3.2))
 # axs = [axs]
 count = 0
-relevant_times = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10 / 3, 20 / 3]
+relevant_times = [0, 1.75, 2, 3.75, 4]
 for l, t, c in zip(cuts_data["Landscapes"], cuts_data["times"], line_colors):
     # if t in [0, 1, 2, 4, 6]:
     if t in cuts_data["times"]:
-        if t == 3:
+        if t == 4:
             continue
         axs[0].plot(
             cuts_data["cut_samples"] / np.pi,
@@ -140,6 +139,6 @@ axs[0].legend(
 #     borderpad=0.00001,
 # )
 
-plt.savefig(directory.parent / f"plots/weird_plot.svg")
+plt.savefig(directory.parent / f"plots/degenerate.svg")
 
 plt.show()

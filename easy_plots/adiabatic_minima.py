@@ -7,17 +7,18 @@ from joblib import Parallel, delayed
 from qiskit.quantum_info import SparsePauliOp, Statevector, state_fidelity
 from scipy.sparse.linalg import expm_multiply
 
-directory = pathlib.Path(__file__).parent.resolve()
+directory = pathlib.Path(__file__).parents[1].resolve() / "moving_minima"
 name = "weird_cuts.npy"
 plt.style.use(directory.parent / "plots/plot_style.mplstyle")
 # terms = [("Y", -0.95), ("ZZ", 1)]
-terms = str([("Y", -0.95), ("XX", 1)])
+terms = str([("Y", -0.95), ("XZ", 1)])
 
-
+print(directory / terms / name)
 if not (directory / terms / name).exists():
     # if True:
     data = np.load(
-        directory / terms / "moving_minima_qubits=10.npy", allow_pickle=True
+        directory / terms / "moving_minima_qubits=10.npy",
+        allow_pickle=True,
     ).item()
     print(data.keys())
     print(data["Hamiltonian"])
@@ -101,7 +102,7 @@ for l, t, c in zip(cuts_data["Landscapes"], cuts_data["times"], line_colors):
             linestyle="-",
             linewidth=1.5 if t in relevant_times else 1,
             alpha=1 if t in relevant_times else 0.5,
-            label=rf"$\Delta_H \delta t={t}$" if t in relevant_times else None,
+            label=rf"$\delta t={t}$" if t in relevant_times else None,
         )
 # axs.set_xlabel(r"$\norm{\theta}_{\infty}$")
 axs[0].set_xlabel(r"Update Size, $\norm{\bm{\theta}}_{\infty}$")
@@ -111,34 +112,31 @@ axs[0].legend(
     borderpad=0.00001,
 )
 
-# for n in [4, 6, 8, 10]:
-# for n in [10]:
-#     data_mov = np.load(
-#         directory / f"{terms}/moving_minima_qubits={n}.npy", allow_pickle=True
-#     ).item()
-#     ps = [np.linalg.norm(c, np.inf) for c in data_mov["perturbation"]]
-#     # angles = [
-#     #     np.arccos(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
-#     #     for a, b in zip(data_mov["perturbation"][1:], data_mov["perturbation"][:-1])
-#     # ]
-#     angles = [
-#         np.arccos(
-#             np.dot(data_mov["perturbation"][1], b)
-#             / (np.linalg.norm(data_mov["perturbation"][1]) * np.linalg.norm(b))
-#         )
-#         for b in data_mov["perturbation"][1:]
-#     ]
-#     print(angles)
-#     axs[1].plot(data_mov["times"][:-1], ps[:-1], marker=".", label=f"n={n}")
-#     # ax2.plot(data_mov["times"][1:], angles, marker="x", label=f"n={n} Angle")
-#
-# axs[1].set_ylabel(r"Update Size, $\norm{\bm{\theta}}_{\infty}$")
-# axs[1].tick_params(axis="x", labelsize=11)
-# axs[1].set_xlabel(r"Normalized Time, $\Delta_H \delta t$")
-# axs[1].legend(
-#     borderpad=0.00001,
-# )
+for n in [4, 6, 8, 10]:
+    data_mov = np.load(
+        directory / f"{terms}/moving_minima_qubits={n}.npy", allow_pickle=True
+    ).item()
+    ps = [np.linalg.norm(c, np.inf) for c in data_mov["perturbation"]]
+    # angles = [
+    #     np.arccos(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
+    #     for a, b in zip(data_mov["perturbation"][1:], data_mov["perturbation"][:-1])
+    # ]
+    angles = [
+        np.arccos(
+            np.dot(data_mov["perturbation"][1], b)
+            / (np.linalg.norm(data_mov["perturbation"][1]) * np.linalg.norm(b))
+        )
+        for b in data_mov["perturbation"][1:]
+    ]
+    print(angles)
+    axs[1].plot(data_mov["times"][:-1], ps[:-1], marker=".", label=f"n={n}")
+    # ax2.plot(data_mov["times"][1:], angles, marker="x", label=f"n={n} Angle")
 
-plt.savefig(directory.parent / f"plots/weird_plot.svg")
+axs[1].set_ylabel(r"Update Size, $\norm{\bm{\theta}}_{\infty}$")
+axs[1].tick_params(axis="x", labelsize=11)
+axs[1].set_xlabel(r"Normalized Time, $\delta t$")
+axs[1].legend(
+    borderpad=0.00001,
+)
 
-plt.show()
+plt.savefig(directory.parent / f"plots/adiabatic_minima.svg")

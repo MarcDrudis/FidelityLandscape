@@ -7,7 +7,7 @@ directory = pathlib.Path(__file__).parent.resolve()
 name = "weird_cuts.npy"
 plt.style.use(directory.parent / "plots/plot_style.mplstyle")
 # terms = [("Y", -0.95), ("ZZ", 1)]
-terms = str([("Y", -0.96), ("XX", 1)])
+terms = str([("Y", -0.95), ("XX", 1)])
 
 
 cuts_data = np.load(
@@ -50,4 +50,4 @@ axs[0].legend(
 
 plt.savefig(directory.parent / f"plots/small_banana.svg")
 
-# plt.show()
+plt.show()

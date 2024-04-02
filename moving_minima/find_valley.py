@@ -32,10 +32,7 @@ print(s, s[-rank:])
 increments_kernel = v[:-rank] * (24 * eps / qc.num_parameters**3) ** (1 / 4) * 4e-1
 increments_significant = (
     np.array(
-        [
-            v[-r] * np.sqrt(s[-r] * 2 / qc.num_parameters**3)
-            for r in range(1, rank + 1)
-        ]
+        [v[-r] * np.sqrt(s[-r] * 2 / qc.num_parameters**3) for r in range(1, rank + 1)]
     )
     * 1e-3
 )

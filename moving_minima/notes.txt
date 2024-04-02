@@ -1,0 +1,13 @@
+This probably has a banana at an update size of a little bit less than 1
+H = lattice_hamiltonian(
+    num_qubits,
+    [
+        ("Y", -0.95),
+        ("XX", 1),
+    ],
+)
+normalization = eigenrange(H)
+print(normalization)
+H /= normalization
+
+qc = ansatz_QRTE_Hamiltonian(H, reps=2)

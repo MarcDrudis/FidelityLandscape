@@ -16,6 +16,8 @@ setup(
         "pylatexenc",
         "nbformat",
         "numba",
+        "black",
+        "isort",
     ],
     dependency_links=["git+"],
 )

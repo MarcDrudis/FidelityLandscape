@@ -2,7 +2,7 @@ figure.titlesize:11.0
 font.size : 11.0
 font.family: Times New Roman
 text.usetex: True
-text.latex.preamble: \usepackage{amsmath}\usepackage{amssymb}\usepackage{physics}\usepackage{siunitx}[=v2]\usepackage{amsfonts}
+text.latex.preamble: \usepackage{amsmath}\usepackage{bm}\usepackage{amssymb}\usepackage{physics}\usepackage{siunitx}[=v2]\usepackage{amsfonts}
 errorbar.capsize: 2
 axes.prop_cycle    :(cycler(color=["#4056A1", "#075C2F", "#7D8238", "#453F3F", "#692411", "#D79922", "#F13C20"]) + cycler(linestyle=['-', '--', '-.',':','-', '--', '-.']))
 legend.frameon:False

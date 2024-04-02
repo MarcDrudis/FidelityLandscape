@@ -72,6 +72,28 @@ def qubit_variance(num_qubits: int, r: float, depth: str, samples: int) -> float
     return vc.direct_compute_variance(samples, r)
 
 
+def lattice_hamiltonian(
+    num_qubits: int,
+    terms: list[tuple[str, float]],
+    periodic: bool = False,
+):
+    one_local_connections = [(c,) for c in range(num_qubits)]
+    two_local_connections = [
+        (cA, cB) for cA, cB in zip(range(num_qubits - 1), range(1, num_qubits))
+    ]
+    if periodic:
+        two_local_connections += [(0, num_qubits - 1)]
+
+    all_terms_list = []
+    for term, coeff in terms:
+        connections = one_local_connections if len(term) == 1 else two_local_connections
+        all_terms_list += [(term, c, coeff) for c in connections]
+
+    H = SparsePauliOp.from_sparse_list(all_terms_list, num_qubits=num_qubits)
+
+    return H
+
+
 def create_heisenberg(
     num_qubits: int, j_const: float, g_const: float, circular: bool = False
 ) -> SparsePauliOp:

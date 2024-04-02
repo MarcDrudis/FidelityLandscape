@@ -2,8 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qiskit.circuit import ParameterVector, QuantumCircuit, parameter
 from qiskit.circuit.library import PauliEvolutionGate
-from qiskit.quantum_info import (Pauli, SparsePauliOp, Statevector,
-                                 state_fidelity)
+from qiskit.quantum_info import Pauli, SparsePauliOp, Statevector, state_fidelity
 from scipy.optimize import minimize
 from scipy.sparse.linalg import expm_multiply
 from tqdm import tqdm

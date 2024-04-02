@@ -81,7 +81,7 @@ import seaborn as sns
 
 cmap = sns.color_palette("flare", as_cmap=True)
 norm = plt.Normalize(cuts_data["times"].min(), cuts_data["times"].max())
-line_colors = cmap(norm(cuts_data["times"]))
+line_colors = cmap(norm(cuts_data["times"]))[::-1]
 
 width_document = 510 / 72.27
 # Create subplots
@@ -98,10 +98,10 @@ for l, t, c in zip(cuts_data["Landscapes"], cuts_data["times"], line_colors):
             cuts_data["cut_samples"] / np.pi,
             l,
             color=c,
-            linestyle="-",
+            linestyle="-" if t not in relevant_times else "-.",
             linewidth=1 if t in relevant_times else 1,
             alpha=1 if t in relevant_times else 0.5,
-            label=rf"$\delta t={t}$" if t in relevant_times else None,
+            label=rf"$\delta t={t*0.04158516:.2f}$" if t in relevant_times else None,
         )
 # axs.set_xlabel(r"$\norm{\theta}_{\infty}$")
 axs[0].set_xlabel(r"Update Size, $\norm{\bm{\theta}}_{\infty}$")
@@ -121,7 +121,7 @@ for n in [4, 6, 8, 10]:
 
 axs[1].set_ylabel(r"Update Size, $\norm{\bm{\theta}}_{\infty}$")
 axs[1].tick_params(axis="x", labelsize=11)
-axs[1].set_xlabel(r"Normalized Time, $\delta t$")
+axs[1].set_xlabel(r"Time, $\delta t$")
 axs[1].legend(
     borderpad=0.00001,
 )

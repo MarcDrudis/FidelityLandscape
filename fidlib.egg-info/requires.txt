@@ -6,3 +6,7 @@ pandas
 pylatexenc
 nbformat
 numba
+black
+isort
+joblib
+seaborn

@@ -2,10 +2,21 @@ from typing import Callable
 
 import numpy as np
 import plotly.express as px
-from qiskit.algorithms import SciPyRealEvolver, TimeEvolutionProblem
 from qiskit.circuit.library import EfficientSU2
 from qiskit.quantum_info import SparsePauliOp, Statevector, state_fidelity
+from qiskit_algorithms import SciPyRealEvolver, TimeEvolutionProblem
 from scipy.optimize import approx_fprime
+
+
+def get_ansatz(num_qubits: int, depth: str):
+    """
+    Creates an ansatz with a given number of qubits and a depth that scales
+    either linearly or is constant with respect to number of qubits.
+    """
+    if depth not in ("linear", "const"):
+        raise ValueError("Depth must be either 'linear' of 'const' ")
+    reps = 6 if depth == "const" else max(num_qubits - 1, 1)
+    return EfficientSU2(num_qubits=num_qubits, reps=reps)
 
 
 def find_local_minima(
@@ -41,6 +52,48 @@ def find_local_minima(
     return x
 
 
+def qubit_variance(num_qubits: int, r: float, depth: str, samples: int) -> float:
+    """
+    Computes the variance for a given quantum circuit.
+    Args:
+        num_qubits(int): number of qubits of the system
+        r(float): side of the hypercube to sample from
+        depth(str): "linear" or "const" for the number of repetitions
+        of the ansatz
+    """
+    qc = get_ansatz(num_qubits, depth)
+    times = None
+    vc = VarianceComputer(
+        qc=qc,
+        initial_parameters=None,
+        times=times,
+        H=create_ising(num_qubits=num_qubits, j_const=0.5, g_const=-1),
+    )
+    return vc.direct_compute_variance(samples, r)
+
+
+def lattice_hamiltonian(
+    num_qubits: int,
+    terms: list[tuple[str, float]],
+    periodic: bool = False,
+):
+    one_local_connections = [(c,) for c in range(num_qubits)]
+    two_local_connections = [
+        (cA, cB) for cA, cB in zip(range(num_qubits - 1), range(1, num_qubits))
+    ]
+    if periodic:
+        two_local_connections += [(0, num_qubits - 1)]
+
+    all_terms_list = []
+    for term, coeff in terms:
+        connections = one_local_connections if len(term) == 1 else two_local_connections
+        all_terms_list += [(term, c, coeff) for c in connections]
+
+    H = SparsePauliOp.from_sparse_list(all_terms_list, num_qubits=num_qubits)
+
+    return H
+
+
 def create_heisenberg(
     num_qubits: int, j_const: float, g_const: float, circular: bool = False
 ) -> SparsePauliOp:
@@ -67,10 +120,10 @@ def create_heisenberg(
 
 def create_ising(
     num_qubits: int,
-    j_const: float,
-    g_const: float,
+    zz_const: float,
+    z_const: float,
     circular: bool = False,
-    nonint_const: float = 0,
+    x_const: float = 0,
 ) -> SparsePauliOp:
     """Creates an Heisenberg Hamiltonian on a lattice."""
     zz_op = ["I" * i + "ZZ" + "I" * (num_qubits - i - 2) for i in range(num_qubits - 1)]
@@ -81,9 +134,9 @@ def create_ising(
     x_op = ["I" * i + "X" + "I" * (num_qubits - i - 1) for i in range(num_qubits)]
 
     return (
-        SparsePauliOp(zz_op + circ_op) * j_const
-        + SparsePauliOp(z_op) * g_const
-        + SparsePauliOp(x_op) * nonint_const
+        SparsePauliOp(zz_op + circ_op) * zz_const
+        + SparsePauliOp(z_op) * z_const
+        + SparsePauliOp(x_op) * x_const
     )
 
 

@@ -18,6 +18,9 @@ setup(
         "numba",
         "black",
         "isort",
+        "joblib",
+        "seaborn",
+        # "windsurfer @ git+ssh:git@github.com:MarcDrudis/windsurfer.git#egg=windsurfer",
     ],
     dependency_links=["git+"],
 )

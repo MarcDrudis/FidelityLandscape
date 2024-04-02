@@ -8,7 +8,6 @@ from qiskit import QuantumCircuit
 from qiskit.quantum_info import SparsePauliOp, Statevector, state_fidelity
 from scipy.optimize import minimize
 from scipy.sparse.linalg import expm_multiply
-from windsurfer.utils.norms import eigenrange
 
 directory = pathlib.Path(__file__).parent.resolve()
 plt.style.use(directory.parent / "plots/plot_style.mplstyle")
@@ -38,13 +37,13 @@ print(data.keys())
 
 qc = data["qc"]
 H = data["Hamiltonian"]
+print(H)
 index = 4
 alternative_params = data["perturbation"][index]
 time_of_cut = data["times"][index]
 print(f"Time is {time_of_cut}")
 print(H.num_qubits, qc.num_qubits)
 print(qc.num_parameters)
-assert np.isclose(eigenrange(H), 1), f"Not normalized norm={eigenrange(H)}"
 
 initial_state = Statevector(qc.assign_parameters(data["initial_parameters"]))
 
@@ -126,7 +125,7 @@ for splitter in splitters:
     heatmap = axs[1].imshow(
         image,
         cmap="viridis_r",
-        norm=LogNorm(),
+        # norm=LogNorm(vmin=image.min(), vmax=image.max()),
         interpolation="bicubic",
         extent=[-0.8, 1.8, 1.8, -0.8],
     )
@@ -184,9 +183,11 @@ if not (directory.parent / "moving_minima" / str(terms) / name).exists():
         for t, u in zip(data["times"], unit_cuts)
     ]
     trajectory = []
+    inf_trajectory = []
 
     def add_to_trajectory(intermediate_result):
         trajectory.append(intermediate_result.x - data["initial_parameters"])
+        inf_trajectory.append(intermediate_result.fun - data["initial_parameters"])
         print(intermediate_result)
 
     result = minimize(
@@ -194,6 +195,7 @@ if not (directory.parent / "moving_minima" / str(terms) / name).exists():
         x0=data["initial_parameters"],
         args=(initial_state, qc, H * time_of_cut),
         callback=add_to_trajectory,
+        method="BFGS",
     )
     print("trajectory", len(trajectory))
 
@@ -203,6 +205,7 @@ if not (directory.parent / "moving_minima" / str(terms) / name).exists():
         "times": data["times"],
         "perturbation": data["perturbation"],
         "trajectory": trajectory,
+        "inf_trajectory": inf_trajectory,
     }
 
     np.save(
@@ -251,16 +254,21 @@ norm = plt.Normalize(cuts_data["times"].min(), cuts_data["times"].max())
 line_colors = cmap(norm(cuts_data["times"]))
 
 
-relevant_times = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+print(cuts_data["times"])
+relevant_times = [0, 1, 9, 10]
 for l, t, c in zip(cuts_data["Landscapes"], cuts_data["times"], line_colors):
+    if t > 9:
+        continue
     axs[0].plot(
         cuts_data["cut_samples"] / np.pi,
         l,
         color=c,
         linestyle="-",
         linewidth=1.5 if t in relevant_times else 1,
-        alpha=1 if t in relevant_times else 0.5,
-        label=rf"$\delta t={t}$" if t in relevant_times else None,
+        alpha=1 if t in relevant_times else 0.3,
+        label=(
+            rf"$\delta t={np.round(t*0.04158516,2)}$" if t in relevant_times else None
+        ),
     )
 # axs.set_xlabel(r"$\norm{\theta}_{\infty}$")
 axs[0].set_xlabel(r"Update Size, $\norm{\bm{\theta}}_{\infty}$")
@@ -268,4 +276,4 @@ axs[0].tick_params(axis="x", labelsize=11)
 axs[0].set_ylabel(r"Infidelity, $\mathcal{L}(\bm{\theta})$")
 axs[0].legend(bbox_to_anchor=(1.04, 0.5), loc="center left", borderaxespad=0)
 plt.savefig(directory.parent / f"plots/riverplot.svg")
-plt.show()
+# plt.show()

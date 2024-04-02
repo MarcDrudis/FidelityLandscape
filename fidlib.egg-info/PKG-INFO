@@ -13,3 +13,7 @@ Requires-Dist: pandas
 Requires-Dist: pylatexenc
 Requires-Dist: nbformat
 Requires-Dist: numba
+Requires-Dist: black
+Requires-Dist: isort
+Requires-Dist: joblib
+Requires-Dist: seaborn

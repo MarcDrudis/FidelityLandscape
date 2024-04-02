@@ -234,6 +234,12 @@ projectionsy = np.array(
 )
 projectionsy /= projectionsy[-1]
 axs[1].plot(projectionsx, projectionsy, color="red")
+axs[1].scatter(x=[0, 1], y=[0, 1], marker="x", color="black")
+axs[1].annotate(r"$\theta_0$", (0.1, 0.1))
+axs[1].annotate(r"$\theta^*$", (1.1, 1.1))
+axs[1].set_xticks([])
+axs[1].set_yticks([])
+
 
 # Plotting
 
@@ -246,16 +252,15 @@ colors = [
     "#692411",
 ] * 10
 
-cmap = plt.get_cmap("viridis")
 import seaborn as sns
 
 cmap = sns.color_palette("flare", as_cmap=True)
 norm = plt.Normalize(cuts_data["times"].min(), cuts_data["times"].max())
-line_colors = cmap(norm(cuts_data["times"]))
+line_colors = cmap(norm(cuts_data["times"]))[::-1]
 
 
 print(cuts_data["times"])
-relevant_times = [0, 1, 9, 10]
+relevant_times = [1, 5, 9]
 for l, t, c in zip(cuts_data["Landscapes"], cuts_data["times"], line_colors):
     if t > 9:
         continue
@@ -263,8 +268,8 @@ for l, t, c in zip(cuts_data["Landscapes"], cuts_data["times"], line_colors):
         cuts_data["cut_samples"] / np.pi,
         l,
         color=c,
-        linestyle="-",
-        linewidth=1.5 if t in relevant_times else 1,
+        linestyle="-" if t not in relevant_times else "-.",
+        linewidth=1 if t in relevant_times else 1,
         alpha=1 if t in relevant_times else 0.3,
         label=(
             rf"$\delta t={np.round(t*0.04158516,2)}$" if t in relevant_times else None
@@ -274,6 +279,7 @@ for l, t, c in zip(cuts_data["Landscapes"], cuts_data["times"], line_colors):
 axs[0].set_xlabel(r"Update Size, $\norm{\bm{\theta}}_{\infty}$")
 axs[0].tick_params(axis="x", labelsize=11)
 axs[0].set_ylabel(r"Infidelity, $\mathcal{L}(\bm{\theta})$")
-axs[0].legend(bbox_to_anchor=(1.04, 0.5), loc="center left", borderaxespad=0)
+# axs[0].legend(bbox_to_anchor=(1.04, 0.5), loc="center left", borderaxespad=0)
+axs[0].legend(loc="center left", borderaxespad=0.4)
 plt.savefig(directory.parent / f"plots/riverplot.svg")
 # plt.show()

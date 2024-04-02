@@ -77,7 +77,6 @@ else:
 # Plotting
 
 
-cmap = plt.get_cmap("viridis")
 import seaborn as sns
 
 cmap = sns.color_palette("flare", as_cmap=True)
@@ -100,7 +99,7 @@ for l, t, c in zip(cuts_data["Landscapes"], cuts_data["times"], line_colors):
             l,
             color=c,
             linestyle="-",
-            linewidth=1.5 if t in relevant_times else 1,
+            linewidth=1 if t in relevant_times else 1,
             alpha=1 if t in relevant_times else 0.5,
             label=rf"$\delta t={t}$" if t in relevant_times else None,
         )
@@ -117,18 +116,6 @@ for n in [4, 6, 8, 10]:
         directory / f"{terms}/moving_minima_qubits={n}.npy", allow_pickle=True
     ).item()
     ps = [np.linalg.norm(c, np.inf) for c in data_mov["perturbation"]]
-    # angles = [
-    #     np.arccos(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
-    #     for a, b in zip(data_mov["perturbation"][1:], data_mov["perturbation"][:-1])
-    # ]
-    angles = [
-        np.arccos(
-            np.dot(data_mov["perturbation"][1], b)
-            / (np.linalg.norm(data_mov["perturbation"][1]) * np.linalg.norm(b))
-        )
-        for b in data_mov["perturbation"][1:]
-    ]
-    print(angles)
     axs[1].plot(data_mov["times"][:-1], ps[:-1], marker=".", label=f"n={n}")
     # ax2.plot(data_mov["times"][1:], angles, marker="x", label=f"n={n} Angle")
 

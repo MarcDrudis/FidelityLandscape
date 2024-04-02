@@ -8,7 +8,7 @@ setup(
     author="Marc Sanz Drudis",
     license="MIT",
     install_requires=[
-        "qiskit",
+        "qiskit>=1",
         "tqdm",
         "matplotlib",
         "plotly",

@@ -1,4 +1,4 @@
-qiskit
+qiskit>=1
 tqdm
 matplotlib
 plotly

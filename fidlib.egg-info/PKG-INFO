@@ -5,7 +5,7 @@ Summary: Python Package for Fidelity Landscape
 Author: Marc Sanz Drudis
 License: MIT
 License-File: LICENSE
-Requires-Dist: qiskit
+Requires-Dist: qiskit>=1
 Requires-Dist: tqdm
 Requires-Dist: matplotlib
 Requires-Dist: plotly

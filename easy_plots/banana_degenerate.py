@@ -65,7 +65,12 @@ def cut(
 
 width_document = 510 / 72.27
 # Create subplots
-fig, axs = plt.subplots(1, 2, figsize=(width_document, width_document / 3.2))
+fig, axs = plt.subplots(
+    1,
+    2,
+    figsize=(width_document, width_document / 3.2),
+    # gridspec_kw={"wspace": 0, "hspace": 1},
+)
 count = 0
 
 resolution = 20
@@ -128,8 +133,10 @@ for splitter in splitters:
         # norm=LogNorm(vmin=image.min(), vmax=image.max()),
         interpolation="bicubic",
         extent=[-0.8, 1.8, 1.8, -0.8],
+        aspect="auto",
     )
-    fig.colorbar(heatmap, ax=axs[1])
+    colorbar = fig.colorbar(heatmap, ax=axs[1])
+    colorbar.set_label(r"Infidelity, $\mathcal{L}(\bm{\theta})$")
 
 
 ## Now the 1D cuts
@@ -187,7 +194,7 @@ if not (directory.parent / "moving_minima" / str(terms) / name).exists():
 
     def add_to_trajectory(intermediate_result):
         trajectory.append(intermediate_result.x - data["initial_parameters"])
-        inf_trajectory.append(intermediate_result.fun - data["initial_parameters"])
+        inf_trajectory.append(intermediate_result.fun)
         print(intermediate_result)
 
     result = minimize(
@@ -280,6 +287,40 @@ axs[0].set_xlabel(r"Update Size, $\norm{\bm{\theta}}_{\infty}$")
 axs[0].tick_params(axis="x", labelsize=11)
 axs[0].set_ylabel(r"Infidelity, $\mathcal{L}(\bm{\theta})$")
 # axs[0].legend(bbox_to_anchor=(1.04, 0.5), loc="center left", borderaxespad=0)
-axs[0].legend(loc="center left", borderaxespad=0.4)
+axs[0].legend(
+    loc="center left",
+    # borderaxespad=0.4,
+)
+
 plt.savefig(directory.parent / f"plots/riverplot.svg")
-# plt.show()
+plt.show()
+
+
+parameter_update = (
+    np.array(cuts_data["trajectory"])[1:] - np.array(cuts_data["trajectory"])[:-1]
+)
+parameter_update = np.linalg.norm(parameter_update, axis=1)
+infidelity_update = np.abs(
+    np.array(cuts_data["inf_trajectory"])[1:]
+    - np.array(cuts_data["inf_trajectory"])[:-1]
+)
+
+fig, ax = plt.subplots(1, 1)
+ax2 = ax.twinx()
+ax.plot(
+    np.cumsum(parameter_update),
+    cuts_data["inf_trajectory"][1:],
+    label=r"$\mathcal{L}(\theta,t)$",
+)
+ax2.plot(
+    np.cumsum(parameter_update),
+    infidelity_update / parameter_update,
+    label=r"$\nabla \mathcal{L}(\theta,t)$",
+    color="red",
+)
+ax.set_xlabel("Cummulative Trajectory")
+ax.set_ylabel("Infidelity")
+ax2.set_ylabel("Directional Gradient")
+ax.legend(loc="center right")
+ax2.legend(loc="upper right")
+plt.show()

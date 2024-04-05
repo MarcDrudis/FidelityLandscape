@@ -1,6 +1,7 @@
 import os
 import pathlib
 import sys
+from os.path import isdir
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -52,16 +53,15 @@ initial_parameters = np.random.default_rng(num_qubits).uniform(
 )
 
 
-# times = np.linspace(0, 10, 4)
-# times = np.linspace(0, 10, 10 + 1)
-times = np.linspace(0, 10, 4 * 10 + 1)
+times = np.linspace(0, 10, 10 + 1)
+# times = np.linspace(0, 10, 4 * 10 + 1)
 print("Times", times)
 global_inf = [lossfunction(0, initial_parameters)]
 global_params = [np.zeros(qc.num_parameters)]
 
 for t in tqdm(times[1:]):
     result_global = minimize(
-        lossfunction, global_params[0], args=(initial_parameters, H * t)
+        lossfunction, global_params[-1], args=(initial_parameters, H * t)
     )
     global_inf.append(result_global.fun)
     global_params.append(result_global.x)

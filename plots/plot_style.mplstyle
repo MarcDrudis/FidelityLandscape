@@ -27,18 +27,18 @@ ps.fonttype: 42
 # legend.scatterpoints: 1
 
 # Set lines and ticks according to the `seaborn-paper` style sheet
-grid.linewidth: 0.8
-lines.linewidth: 1.4
-patch.linewidth: 0.24
-lines.markersize: 5.6
-lines.markeredgewidth: 0
-
-xtick.major.width: 0.8
-ytick.major.width: 0.8
-xtick.minor.width: 0.4
-ytick.minor.width: 0.4
-xtick.major.pad: 5.6
-ytick.major.pad: 5.6
+# grid.linewidth: 0.8
+# lines.linewidth: 1.4
+# patch.linewidth: 0.24
+lines.markersize: 4.6
+# lines.markeredgewidth: 0
+#
+# xtick.major.width: 0.8
+# ytick.major.width: 0.8
+# xtick.minor.width: 0.4
+# ytick.minor.width: 0.4
+# xtick.major.pad: 5.6
+# ytick.major.pad: 5.6
 
 
 
@@ -75,7 +75,8 @@ font.family: Times New Roman
 text.usetex: True
 text.latex.preamble: \usepackage{amsmath}\usepackage{bm}\usepackage{amssymb}\usepackage{physics}\usepackage{siunitx}[=v2]\usepackage{amsfonts}
 errorbar.capsize: 2
-axes.prop_cycle    :(cycler(color=["#4056A1", "#075C2F", "#7D8238", "#453F3F", "#692411", "#D79922", "#F13C20"]) + cycler(linestyle=['-', '--', '-.',':','-', '--', '-.']))
+
+axes.prop_cycle    :(cycler(color=["#4056A1","#075C2F","#7D8238","#D79922","#B74C66"]) + cycler(linestyle=['-', '--', '-.',':','-']))
 legend.frameon:False
 legend.borderpad:     0.1  # border whitespace
 legend.labelspacing:  0.5  # the vertical space between the legend entries

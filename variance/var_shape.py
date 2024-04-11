@@ -13,7 +13,8 @@ from fidlib.variance import VarianceComputer
 
 directory = pathlib.Path(__file__).parent.resolve()
 plt.style.use(directory.parent / "plots/plot_style.mplstyle")
-depth = "const"
+# depth = "const"
+depth = "linear"
 
 
 def infi(num_qubits: int, r: float, depth: int, seed: int):
@@ -121,13 +122,17 @@ result["num_parameters"] = np.array(
 # Set a consistent color palette
 colors = [
     "#4056A1",
+    "#4056A1",
+    "#075C2F",
     "#075C2F",
     "#7D8238",
-    "#453F3F",
-    "#692411",
+    "#7D8238",
     "#D79922",
-    "#F13C20",
+    "#D79922",
+    "#B74C66",
+    "#B74C66",
 ] * 2
+
 
 # fig, axs = plt.subplots(3, 1, figsize=(5, 12))
 # fig.tight_layout(pad=1.0)
@@ -163,7 +168,7 @@ for i, n in enumerate(qubits):
             x=result["rs"] / np.pi,
             y=result["variances"][i],
             # label=f"n={n}",
-            marker=".",
+            # marker=".",
             color=colors[i],
         )
         axs[0].plot(
@@ -233,7 +238,7 @@ ax2.legend(
     [("black", "."), ("black", "x")],
     [r"$\mathrm{Var}[\mathcal{L}]$", r"$\mathcal{L}$"],
     handler_map={tuple: MarkerHandler()},
-    bbox_to_anchor=(-0.03, 1),
+    bbox_to_anchor=(0.0, 0.98),
     loc="upper left",
     handletextpad=0,
     borderaxespad=0,
@@ -247,7 +252,7 @@ axs[1].plot(
     result["num_parameters"],
     result["num_parameters"] ** coeff * 10**prefactor,
     label=f"${{{10**prefactor:.2f}}}m^{{{coeff:.2f}}}$",
-    color=colors[1],
+    color=colors[-3],
 )
 axs[1].legend(frameon=False, loc="upper right", bbox_to_anchor=(1.05, 1.05))
 axs[1].set_yscale("log", base=2)
@@ -269,7 +274,7 @@ axs[2].plot(
     result["num_parameters"],
     result["num_parameters"] ** coeff * 10**prefactor,
     label=f"${{{10**prefactor:.2f}}}m^{{{coeff:.2f}}}$",
-    color=colors[1],
+    color=colors[-3],
 )
 axs[2].legend(frameon=False, loc="upper right", bbox_to_anchor=(1.05, 1.05))
 axs[2].set_xlabel(r"Number of Parameters, $m$")

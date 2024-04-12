@@ -283,3 +283,6 @@ axs[2].set_yscale("log", base=2)
 axs[2].set_xscale("log", base=2)
 fig.savefig(directory.parent / f"plots/variance_{depth}.svg")
 fig.savefig(directory.parent / f"plots/variance_{depth}.png")
+import os
+
+os.system("xdg-open " + str(directory.parent / f"plots/variance_{depth}.svg"))

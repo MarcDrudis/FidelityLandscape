@@ -3,11 +3,14 @@ from itertools import product
 
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 from joblib import Parallel, delayed
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import SparsePauliOp, Statevector, state_fidelity
 from scipy.optimize import minimize
 from scipy.sparse.linalg import expm_multiply
+
+cmap = sns.color_palette("flare", as_cmap=True)
 
 directory = pathlib.Path(__file__).parent.resolve()
 plt.style.use(directory.parent / "plots/plot_style.mplstyle")
@@ -129,7 +132,7 @@ for splitter in splitters:
 
     heatmap = axs[1].imshow(
         image,
-        cmap="viridis_r",
+        cmap=cmap,
         # norm=LogNorm(vmin=image.min(), vmax=image.max()),
         interpolation="bicubic",
         extent=[-0.8, 1.8, 1.8, -0.8],
@@ -240,7 +243,7 @@ projectionsy = np.array(
     ]
 )
 projectionsy /= projectionsy[-1]
-axs[1].plot(projectionsx, projectionsy, color="red")
+axs[1].plot(projectionsx, projectionsy, color="lightgrey")
 axs[1].scatter(x=[0, 1], y=[0, 1], marker="x", color="black")
 axs[1].annotate(r"$\theta_0$", (0.1, 0.1))
 axs[1].annotate(r"$\theta^*$", (1.1, 1.1))
@@ -259,9 +262,6 @@ colors = [
     "#692411",
 ] * 10
 
-import seaborn as sns
-
-cmap = sns.color_palette("flare", as_cmap=True)
 norm = plt.Normalize(cuts_data["times"].min(), cuts_data["times"].max())
 line_colors = cmap(norm(cuts_data["times"]))[::-1]
 

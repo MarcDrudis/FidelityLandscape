@@ -73,7 +73,7 @@ fig, axs = plt.subplots(
 )
 count = 0
 
-resolution = 20
+resolution = 60
 grid_axis = np.linspace(-0.8, 1.8, resolution)
 
 
@@ -255,6 +255,9 @@ pca = get_pca(cuts_data["trajectory"], components_ids=(0, 1))
 loss_function = lambda x: infidelity(
     x + data["initial_parameters"], initial_state, qc, H
 )
+# plt.savefig(directory.parent / f"plots/degenerate_cut.svg")
+# plt.show()
+
 print(
     loss_function(cuts_data["trajectory"][0]),
     loss_function(cuts_data["trajectory"][-1]),
@@ -262,41 +265,70 @@ print(
     loss_function(data["initial_parameters"] * 0),
 )
 print("Initiating scan")
-pca_scan_result = perform_2D_pca_scan(pca, loss_function, n_steps_x=50, offset=4)
+pca_scan_result = perform_2D_pca_scan(pca, loss_function, n_steps_x=70, offset=4)
 print("Initiating plotting")
+
+width_document = 510 / 72.27
+
+fig, axs = plt.subplots(
+    2,
+    1,
+    figsize=(width_document, width_document * 1.8),
+    layout="constrained",
+)
 plot_pca_landscape(
     pca_scan_result,
     pca,
-    ax=axs[1],
+    ax=axs[0],
     cmap=cmap,
     # norm=LogNorm(),
 )
-plot_optimization_trajectory_on_pca(cuts_data["trajectory"], pca, ax=axs[1])
-plot_scatter_points_on_pca(
-    [alternative_params], pca, color="red", zorder=3, linewidth=4, ax=axs[1]
+plot_optimization_trajectory_on_pca(
+    cuts_data["trajectory"], pca, ax=axs[0], marker=None
 )
+plot_scatter_points_on_pca(
+    [cuts_data["trajectory"][i] for i in (0, -1)],
+    pca,
+    color="black",
+    # zorder=3,
+    linewidth=1,
+    ax=axs[0],
+    marker="x",
+    s=70,
+)
+# axs[0].scatter(x=[0, 1], y=[0, 1], marker="x", color="black")
+# axs[0].annotate(r"$\theta_0$", (-2, -0.5))
+# axs[0].annotate(r"$\theta^*$", (3.1, -2))
+axs[0].set_xlabel("")
+axs[0].set_ylabel("")
+axs[0].set_xticks([])
+axs[0].set_yticks([])
 
-plt.savefig(directory.parent / f"plots/riverplot_pca.svg")
-plt.show()
-
-
-fig, ax = plt.subplots(1, 1)
-ax2 = ax.twinx()
-ax.plot(
+ax2 = axs[1].twinx()
+axs[1].plot(
     np.cumsum(parameter_update),
     cuts_data["inf_trajectory"][1:],
     label=r"$\mathcal{L}(\theta,t)$",
+    color="#4056A1",
 )
 ax2.plot(
     np.cumsum(parameter_update),
     infidelity_update / parameter_update,
     label=r"$\nabla \mathcal{L}(\theta,t)$",
-    color="red",
+    color="#D79922",
 )
-ax.set_xlabel("Cummulative Trajectory")
-ax.set_ylabel("Infidelity")
-ax2.set_ylabel("Directional Gradient")
-ax.legend(loc="center right")
+axs[1].set_xlabel("Cummulative Trajectory")
+axs[1].set_ylabel("Infidelity")
+ax2.set_ylabel("Gradient")
+ax2.set_yscale("log")
+# axs[1].legend(loc="center right"
 
+axs[1].legend(loc="upper left", bbox_to_anchor=(0.05, 1))
 ax2.legend(loc="upper right")
-plt.show()
+
+# ax2.legend(loc="upper right")
+plt.savefig(directory.parent / f"plots/pcacut.svg")
+
+import os
+
+os.system(f"xdg-open {directory.parent / 'plots/pcacut.svg'}")

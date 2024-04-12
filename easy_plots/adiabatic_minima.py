@@ -116,7 +116,9 @@ for n in [4, 6, 8, 10]:
         directory / f"{terms}/moving_minima_qubits={n}.npy", allow_pickle=True
     ).item()
     ps = [np.linalg.norm(c, np.inf) for c in data_mov["perturbation"]]
-    axs[1].plot(data_mov["times"][:-1], ps[:-1], marker=".", label=f"n={n}")
+    axs[1].plot(
+        data_mov["times"][:-1] * 0.04158516, ps[:-1], marker=".", label=f"n={n}"
+    )
     # ax2.plot(data_mov["times"][1:], angles, marker="x", label=f"n={n} Angle")
 
 axs[1].set_ylabel(r"Update Size, $\norm{\bm{\theta}}_{\infty}$")
@@ -127,3 +129,6 @@ axs[1].legend(
 )
 
 plt.savefig(directory.parent / f"plots/adiabatic_minima.svg")
+import os
+
+os.system("xdg-open " + str(directory.parent / f"plots/adiabatic_minima.svg"))

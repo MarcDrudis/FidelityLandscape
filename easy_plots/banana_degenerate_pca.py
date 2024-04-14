@@ -268,12 +268,12 @@ print("Initiating scan")
 pca_scan_result = perform_2D_pca_scan(pca, loss_function, n_steps_x=70, offset=4)
 print("Initiating plotting")
 
-width_document = 510 / 72.27
+width_document = 246 / 72.27
 
 fig, axs = plt.subplots(
     2,
     1,
-    figsize=(width_document, width_document * 1.8),
+    figsize=(width_document, width_document * 1.3),
     layout="constrained",
 )
 plot_pca_landscape(
@@ -284,7 +284,11 @@ plot_pca_landscape(
     # norm=LogNorm(),
 )
 plot_optimization_trajectory_on_pca(
-    cuts_data["trajectory"], pca, ax=axs[0], marker=None
+    cuts_data["trajectory"],
+    pca,
+    ax=axs[0],
+    marker=None,
+    linewidth=2,
 )
 plot_scatter_points_on_pca(
     [cuts_data["trajectory"][i] for i in (0, -1)],
